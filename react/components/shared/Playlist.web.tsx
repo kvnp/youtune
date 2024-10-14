@@ -8,7 +8,7 @@ import Navigation from '../../services/ui/Navigation';
 import { showModal } from '../modals/MoreModal';
 import { playlistStyle } from '../../styles/Playlist';
 
-export default Playlist = ({ playlist, navigation, style, onPress }) => {
+export default function Playlist({ playlist, navigation, style, onPress }) {
     let { title, subtitle, thumbnail, placeholder,
           videoId, browseId, playlistId } = playlist;
 

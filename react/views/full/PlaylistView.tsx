@@ -19,7 +19,7 @@ import { bottomBarStyle,bottomBarAlbumStyle } from "../../styles/BottomBar";
 import { rippleConfig } from "../../styles/Ripple";
 import Playlist from "../../model/music/playlist";
 
-export default PlaylistView = ({ route, navigation }) => {
+export default function PlaylistView({ route, navigation }) {
     const {colors} = useTheme();
     const [playlist, setPlaylist] = useState<Playlist>();
     const idFits = route.params?.list == Navigation.transitionPlaylist?.playlistId ||

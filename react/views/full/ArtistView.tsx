@@ -18,7 +18,7 @@ import { bottomBarStyle } from "../../styles/BottomBar";
 import { rippleConfig } from "../../styles/Ripple";
 import { insertBeforeLast } from "../../utils/Navigation";
 
-export default ArtistView = ({ route, navigation }) => {
+export default function ArtistView({ route, navigation }) {
     const {dark, colors}  = useTheme();
     const [artist, setArtist] = useState(null);
 

@@ -15,7 +15,7 @@ import { useTheme } from "@react-navigation/native";
 
 import { appColor } from "../../styles/App";
 
-export default AddPlaylistModal = ({visible, addCallback, cancelCallback}) => {
+export default function AddPlaylistModal({visible, addCallback, cancelCallback}) {
     const {colors} = useTheme();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");

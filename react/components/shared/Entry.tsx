@@ -14,7 +14,7 @@ import { resultStyle } from '../../styles/Search';
 import { showModal } from '../modals/MoreModal';
 import Navigation from '../../services/ui/Navigation';
 
-export default Entry = ({ entry, navigation, index, forcedPlaylistId }) => {
+export default function Entry({ entry, navigation, index, forcedPlaylistId }) {
     const { title, subtitle, artist, thumbnail, artwork,
             videoId, browseId, playlistId } = entry;
 

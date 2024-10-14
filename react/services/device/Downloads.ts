@@ -79,29 +79,30 @@ export default class Downloads {
     }
 
     static downloadTrack(videoId: string, cacheOnly: boolean) {
-        if (videoId in this.#downloadQueue)
-            return;
+        // if (videoId in this.#downloadQueue)
+        //     return;
 
-        let worker = new Worker(new URL("../../services/web/download/worker.js", import.meta.url));
-        this.#downloadQueue[videoId] = {worker, speed: "0Kb/s", progress: 0};
-        this.#emitter.emit(this.EVENT_PROGRESS, videoId);
-        worker.onmessage = e => {
-            if (e.data.message == "track")
-                Storage.setItem("Tracks", e.data.payload);
-            else if (e.data.message == "download")
-                Storage.setItem("Downloads", e.data.payload);
-            else {
-                this.#downloadQueue[videoId].speed = e.data.payload.speed;
-                this.#downloadQueue[videoId].progress = e.data.payload.progress;
-                if (e.data.payload.completed) {
-                    delete this.#downloadQueue[videoId];
-                    this.#downloadedTracks.push(videoId);
-                    this.#emitter.emit(this.EVENT_DOWNLOAD, true);
-                }
-                this.#emitter.emit(this.EVENT_PROGRESS, videoId);
-            }
-        };
-        worker.postMessage({videoId, cacheOnly});
+        // let worker = new Worker("/public/download/worker.js");
+        // this.#downloadQueue[videoId] = {worker, speed: "0Kb/s", progress: 0};
+        // this.#emitter.emit(this.EVENT_PROGRESS, videoId);
+        // worker.onmessage = e => {
+        //     if (e.data.message == "track")
+        //         Storage.setItem("Tracks", e.data.payload);
+        //     else if (e.data.message == "download")
+        //         Storage.setItem("Downloads", e.data.payload);
+        //     else {
+        //         this.#downloadQueue[videoId].speed = e.data.payload.speed;
+        //         this.#downloadQueue[videoId].progress = e.data.payload.progress;
+        //         if (e.data.payload.completed) {
+        //             delete this.#downloadQueue[videoId];
+        //             this.#downloadedTracks.push(videoId);
+        //             this.#emitter.emit(this.EVENT_DOWNLOAD, true);
+        //         }
+        //         this.#emitter.emit(this.EVENT_PROGRESS, videoId);
+        //     }
+        // };
+        // worker.postMessage({videoId, cacheOnly});
+        console.log("to be implemented");
     }
 
     static cancelDownload(videoId: string) {
@@ -110,8 +111,8 @@ export default class Downloads {
                 await Downloads.waitForInitialization();
 
             if (videoId in this.#downloadQueue) {
-                let worker = this.#downloadQueue[videoId].worker;
-                worker.terminate();
+                // let worker = this.#downloadQueue[videoId].worker;
+                // worker.terminate();
                 delete this.#downloadQueue[videoId];
                 this.#emitter.emit(this.EVENT_PROGRESS, true);
             }

@@ -9,7 +9,7 @@ import { Button } from "react-native-paper";
 import { useTheme } from "@react-navigation/native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-export default Artists = ({ navigation }) => {
+export default function Artists({ navigation }) {
     const [entries, setEntries] = useState([]);
 
     useEffect(() => {

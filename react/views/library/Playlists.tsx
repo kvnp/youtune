@@ -12,7 +12,7 @@ import { useFocusEffect, useTheme } from "@react-navigation/native";
 import Playlist from '../../components/shared/Playlist';
 import AddPlaylistModal from "../../components/modals/AddPlaylistModal";
 
-export default Playlists = ({navigation}) => {
+export default function Playlists({navigation}) {
     const [modalVisible, setModalVisible] = useState(false);
     const [loading, setLoading] = useState(true);
     const [playlists, setPlaylists] = useState([]);

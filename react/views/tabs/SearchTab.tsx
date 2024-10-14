@@ -22,7 +22,7 @@ import { rippleConfig } from '../../styles/Ripple';
 import { searchBarStyle } from '../../styles/Search';
 import { resultHomeStyle, preResultHomeStyle } from '../../styles/Home';
 
-export default SearchTab = () => {
+export default function SearchTab() {
     const [searchText, setSearchText] = useState("Look for music using the search bar");
     const [shelves, setShelves] = useState([]);
     const [loading, setLoading] = useState(false);

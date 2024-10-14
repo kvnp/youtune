@@ -9,7 +9,7 @@ import { Button } from "react-native-paper";
 import { useTheme } from "@react-navigation/native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-export default Albums = ({ navigation }) => {
+export default function Albums({ navigation }) {
     const [entries, setEntries] = useState([]);
 
     useEffect(() => {

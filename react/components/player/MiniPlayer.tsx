@@ -11,7 +11,7 @@ import Cast from "../../services/music/Cast";
 import ScrollingText from "../shared/ScrollingText";
 import { showStreamModal } from "../modals/StreamModal";
 
-export default MiniPlayer = ({style, containerStyle}) => {
+export default function MiniPlayer({style, containerStyle}) {
     const navigation = useNavigation();
     const { colors } = useTheme();
 

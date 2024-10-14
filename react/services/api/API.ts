@@ -8,31 +8,35 @@ import Track from "../../model/music/track";
 
 export default class API {
     static RequestBody = class RequestBody {
-        static BODY: Body = {
-            context: {
-                client: {
-                    clientName: "ANDROID_MUSIC",
-                    clientVersion: "5.16.51",
-                    ...(Settings.Values.transmitLanguage
-                        ? {gl: Device.Language.GL, hl: Device.Language.HL}
-                        : undefined
-                    )
+        static BODY = () => {
+            return {
+                context: {
+                    client: {
+                        clientName: "ANDROID_MUSIC",
+                        clientVersion: "5.16.51",
+                        ...(Settings.Values.transmitLanguage
+                            ? {gl: Device.Language.GL, hl: Device.Language.HL}
+                            : undefined
+                        )
+                    }
                 }
             }
-        }
+        };
 
-        static WEB = {
-            context: {
-                client: {
-                    clientName: "WEB_REMIX",
-                    clientVersion: "0.1",
-                    ...(Settings.Values.transmitLanguage
-                        ? {gl: Device.Language.GL, hl: Device.Language.HL}
-                        : undefined
-                    )
+        static WEB = () => {
+            return {
+                context: {
+                    client: {
+                        clientName: "WEB_REMIX",
+                        clientVersion: "1.20241007.00.00",
+                        ...(Settings.Values.transmitLanguage
+                            ? {gl: Device.Language.GL, hl: Device.Language.HL}
+                            : undefined
+                        )
+                    }
                 }
             }
-        }
+        };
     }
     
     static URL = class URL {
@@ -76,7 +80,7 @@ export default class API {
     }
 
     static async getSearchResults(query, params) {
-        let requestBody = API.RequestBody.WEB;
+        let requestBody = API.RequestBody.WEB();
         requestBody.query = query;
         requestBody.params = params;
 
@@ -94,7 +98,7 @@ export default class API {
     }
 
     static async getSearchSuggestions(query) {
-        let requestBody = API.RequestBody.BODY;
+        let requestBody = API.RequestBody.BODY();
         requestBody.input = query;
 
         let url = API.URL.Suggestion;
@@ -120,7 +124,7 @@ export default class API {
                 resolve(API.initialData);
 
             //TODO implement continuation
-            let requestBody = API.RequestBody.WEB;
+            let requestBody = API.RequestBody.WEB();
             if (continuation && browseId == "FEmusic_home")
                 url = url + "&ctoken=" + continuation.continuation + 
                             "&continuation=" + continuation.continuation +
@@ -153,7 +157,7 @@ export default class API {
     }
 
     static async getAudioInfo({videoId, playlistId = undefined, controllerCallback = undefined}: {videoId: string, playlistId: string | undefined, controllerCallback: AbortController | undefined}) {
-        let requestBody = API.RequestBody.BODY;
+        let requestBody = API.RequestBody.BODY();
         requestBody.videoId = videoId;
         requestBody.playlistId = playlistId;
 
@@ -172,7 +176,7 @@ export default class API {
     }
 
     static async getAudioStream({videoId, controllerCallback = undefined}: {videoId: string, controllerCallback: AbortController | undefined}) {
-        let requestBody = API.RequestBody.BODY;
+        let requestBody = API.RequestBody.BODY();
         requestBody.videoId = videoId;
 
         let url = API.URL.Stream;
@@ -198,7 +202,7 @@ export default class API {
             playlistId = "RDAMVM" + videoId;
         }
 
-        let requestBody = API.RequestBody.BODY;
+        let requestBody = API.RequestBody.BODY();
         requestBody.enablePersistentPlaylistPanel = true;
         requestBody.isAudioOnly = true;
         requestBody.videoId = videoId;

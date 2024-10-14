@@ -1,7 +1,6 @@
-import React from "react";
 //import { WebView } from 'react-native-webview';
 
-export default CaptchaView = ({route}) => {
+export default function CaptchaView({route}) {
     const destination = "https://www.youtube.com/watch?v=" + route.params.videoId;
     /*return <WebView
                 source={{ uri: destination }}

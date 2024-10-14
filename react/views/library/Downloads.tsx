@@ -17,7 +17,7 @@ import Service from '../../services/device/Downloads';
 import Entry from "../../components/shared/Entry";
 import { shelvesStyle } from '../../styles/Shelves';
 
-export default Downloads = ({ navigation }) => {
+export default function Downloads({ navigation }) {
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(false);
     const {colors} = useTheme();

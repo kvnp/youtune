@@ -1,7 +1,7 @@
 import { FlatList } from 'react-native';
 import Entry from '../shared/Entry';
 
-export default FlatEntries = ({entries, playlistId, navigation}) => {
+export default function FlatEntries({entries, playlistId, navigation}) {
     return <FlatList
         contentContainerStyle={{
             marginHorizontal: 10,

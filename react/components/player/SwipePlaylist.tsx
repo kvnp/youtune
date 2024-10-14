@@ -16,7 +16,7 @@ import SlidingUpPanel from 'rn-sliding-up-panel';
 import Downloads from "../../services/device/Downloads";
 import Music from "../../services/music/Music";
 
-export default SwipePlaylist = ({playlist, track, backgroundColor, textColor}) => {
+export default function SwipePlaylist({playlist, track, backgroundColor, textColor}) {
     const { height } = Dimensions.get("window");
     const colors = useTheme();
     const panel = useRef(null);

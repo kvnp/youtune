@@ -1,24 +1,15 @@
 import { DeviceEventEmitter, StatusBar } from "react-native";
 import { enableScreens } from "react-native-screens";
 
-import Downloads from "../device/Downloads";
 import Settings from "../device/Settings";
-import Music from "../music/Music";
 
 export default class UI {
     static #emitter = DeviceEventEmitter;
     static EVENT_DARK = "event-dark";
     static EVENT_HEADER = "event-header";
 
-    static initialize = () => {
+    static initialize() {
         enableScreens(true);
-        Downloads.initialize();
-        Music.initialize();
-        Settings.initialize().then(() => {
-            UI.setDarkMode(Settings.Values.darkMode);
-            UI.setHeader({url: Settings.Values.headerState?.source.uri});
-        });
-        
         StatusBar.setTranslucent(true);
         StatusBar.setBackgroundColor("transparent", true);
     }

@@ -11,7 +11,7 @@ import SettingsTab from "../tabs/SettingsTab";
 
 import Music from "../../services/music/Music";
 
-import { navigationOptions } from "../../App";
+import { navigationOptions } from "../../../App";
 import { getIcon } from "../../components/shared/Icon";
 import { headerStyle } from "../../styles/App";
 import Header from "../../components/overlay/Header";
@@ -34,7 +34,7 @@ const tabOptions = {
 
 const getHeight = state => [State.Stopped, State.None].includes(state) ? 0 : 50;
 
-export default Navigator = () => {
+export default function Navigator() {
     const [marginBottom, setMarginBottom] = useState(getHeight(Music.state));
     const [headerTitle, setHeaderTitle] = useState(null);
     

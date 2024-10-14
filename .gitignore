@@ -62,3 +62,7 @@ buck-out/
 
 /web/public
 msbuild.binlog
+# Expo
+.expo
+dist/
+web-build/

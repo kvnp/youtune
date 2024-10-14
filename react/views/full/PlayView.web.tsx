@@ -35,10 +35,10 @@ var imageY = 0;
 var passMovement = false;
 var horizontalLocked = false;
 
-var imageWorker = new Worker(new URL("../../services/web/image/worker.js", import.meta.url));
+var imageWorker = new Worker("/public/image/worker.js");
 var imgColors = null;
 
-export default PlayView = ({route, navigation}) => {
+export default function PlayView({route, navigation}) {
     const [dimensions, setDimensions] = useState({height: window.innerHeight, width: window.innerWidth});
     const { height, width } = dimensions;
     const { dark, colors } = useTheme();

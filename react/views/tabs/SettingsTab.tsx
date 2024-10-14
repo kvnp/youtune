@@ -19,7 +19,7 @@ const host = Platform.OS == "web"
     ? window.location.hostname.replace("-", "‑") // Unicode NON-BREAKING HYPHEN (U+2011)
     : "youtune.kvnp.eu";
 
-export default SettingsTab = () => {
+export default function SettingsTab() {
     const [initialized, setInitialized] = useState(Settings.initialized);
     const [transmitLanguage, setTransmitLanguage] = useState(Settings.Values.transmitLanguage);
     const [proxyYTM, setProxyYTM] = useState(Settings.Values.proxyYTM);

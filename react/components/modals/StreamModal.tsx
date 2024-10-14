@@ -19,7 +19,7 @@ import Cast from "../../services/music/Cast";
 
 export var showStreamModal;
 
-export default StreamModal = () => {
+export default function StreamModal() {
     const {colors} = useTheme();
     const [deviceName, setDeviceName] = useState("");
     const [volume, setVolume] = useState(0);

@@ -17,7 +17,7 @@ import Music from "../../services/music/Music";
 import SwipeLyrics from "./SwipeLyrics";
 
 var lastY;
-export default SwipePlaylist = ({playlist, track, backgroundColor, textColor, style}) => {
+export default function SwipePlaylist({playlist, track, backgroundColor, textColor, style}) {
     const { height } = Dimensions.get("window");
     const colors = useTheme();
     const panel = useRef(null);

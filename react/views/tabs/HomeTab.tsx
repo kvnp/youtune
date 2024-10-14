@@ -16,7 +16,7 @@ import Shelf from '../../components/shared/Shelf';
 import { shelvesStyle } from '../../styles/Shelves';
 import { preResultHomeStyle } from '../../styles/Home';
 
-export default HomeTab = ({navigation}) => {
+export default function HomeTab({navigation}) {
     const [shelves, setShelves] = useState([]);
     const [loading, setLoading] = useState(false);
     const { colors } = useTheme();

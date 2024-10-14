@@ -12,7 +12,7 @@ import ScrollingText from "../shared/ScrollingText";
 import { showStreamModal } from "../modals/StreamModal";
 
 var firstY;
-export default MiniPlayer = ({style, containerStyle, moveMargin, resetMargin}) => {
+export default function MiniPlayer({style, containerStyle, moveMargin, resetMargin}) {
     const navigation = useNavigation();
     const { colors } = useTheme();
 

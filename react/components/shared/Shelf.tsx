@@ -5,7 +5,7 @@ import FlatAlbums from '../collections/FlatAlbums';
 import FlatEntries from '../collections/FlatEntries';
 import { useTheme } from '@react-navigation/native';
 
-export default Shelf = ({ shelf, navigation }) =>  {
+export default function Shelf({ shelf, navigation }) {
     const { title, entries, subtitle, albums, description } = shelf;
     const { colors } = useTheme();
 

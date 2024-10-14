@@ -7,7 +7,8 @@ import { headerStyle } from '../../styles/App';
 
 const gradientColors = "linear-gradient(rgba(242, 242, 242, 0.2),rgba(242, 242, 242, 0.5),rgba(242, 242, 242, 0.8),rgba(242, 242, 242, 1))";
 const gradientColorsDark = "linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.8),rgba(0, 0, 0, 1))";
-export default Header = ({style, title}) => {
+
+export default function Header({style, title}) {
     const [header, setState] = useState({source: {uri: null}});
     const { dark, colors } = useTheme();
     const container = useRef(null);

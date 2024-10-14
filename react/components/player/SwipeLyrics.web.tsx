@@ -13,7 +13,7 @@ import SlidingUpPanel from 'rn-sliding-up-panel';
 import API from "../../services/api/API";
 
 var lastY;
-export default SwipeLyrics = ({playlist, track, backgroundColor, textColor, style}) => {
+export default function SwipeLyrics({playlist, track, backgroundColor, textColor, style}) {
     const { height } = Dimensions.get("window");
     const colors = useTheme();
     const panel = useRef(null);

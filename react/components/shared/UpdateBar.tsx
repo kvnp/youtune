@@ -4,7 +4,7 @@ import { Snackbar } from 'react-native-paper';
 
 const UpdateBar = () => {
     const [visible, setVisible] = useState(false);
-    const [state, setState] = useState({
+    const [state, setState] = useState<{message: String | null, label: String | null, onPress: () => void}>({
         message: null,
         label: null,
         onPress: null
@@ -12,17 +12,19 @@ const UpdateBar = () => {
 
     useEffect(() => {
         if (Platform.OS == "web") {
-            window['isUpdateAvailable'].then(isAvailable => {
-                if (isAvailable) {
-                    setState({
-                        message: "An update is availabe!",
-                        label: "Reload",
-                        onPress: () => location.reload()
-                    });
+            const isUpdateAvailable = window['isUpdateAvailable'];
+            if (isUpdateAvailable)
+                isUpdateAvailable.then((isAvailable: boolean) => {
+                    if (isAvailable) {
+                        setState({
+                            message: "An update is availabe!",
+                            label: "Reload",
+                            onPress: () => location.reload()
+                        });
 
-                    setVisible(true);
-                }
-            });
+                        setVisible(true);
+                    }
+                });
         }
     }, []);
 

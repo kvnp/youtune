@@ -11,7 +11,7 @@ import Downloads from "../../services/device/Downloads";
 import { resultStyle } from '../../styles/Search';
 import { showModal } from '../modals/MoreModal';
 
-export default Entry = ({ entry, navigation, index, forcedPlaylistId }) => {
+export default function Entry({ entry, navigation, index, forcedPlaylistId }) {
     const { title, subtitle, artist, thumbnail, artwork,
             videoId, browseId, playlistId } = entry;
 

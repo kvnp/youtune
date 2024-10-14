@@ -26,7 +26,7 @@ var dlListener;
 var lkListener;
 var trListener;
 
-export default MoreModal = ({navigation}) => {
+export default function MoreModal({navigation}) {
     const { colors } = useTheme();
     const [ content, setContent ] = useState({
         title: null,

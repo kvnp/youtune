@@ -6,7 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import UI from '../../services/ui/UI';
 import { headerStyle } from '../../styles/App';
 
-export default Header = ({style, title}) => {
+export default function Header({style, title}) {
     const [header, setState] = useState({source: null});
     const { dark, colors } = useTheme();
 
