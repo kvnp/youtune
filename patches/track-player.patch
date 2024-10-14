@@ -1,0 +1,81 @@
+diff --git "a/.\\original_modules\\react-native-track-player\\/lib/src/constants/Event.js" "b/.\\node_modules\\react-native-track-player\\/lib/src/constants/Event.js"
+index 9a5676d..396035a 100644
+--- "a/.\\original_modules\\react-native-track-player\\/lib/src/constants/Event.js"
++++ "b/.\\node_modules\\react-native-track-player\\/lib/src/constants/Event.js"
+@@ -1,5 +1,4 @@
+-export var Event;
+-(function (Event) {
++export const Event = (function (Event) {
+     Event["PlayerError"] = "player-error";
+     /** Fired when the state of the player changes. */
+     Event["PlaybackState"] = "playback-state";
+@@ -131,4 +130,9 @@ export var Event;
+      * See https://rntp.dev/docs/api/events#commonmetadatareceived
+      **/
+     Event["MetadataCommonReceived"] = "metadata-common-received";
+-})(Event || (Event = {}));
++
++    console.log("console.log(Event);");
++    console.log(Event);
++
++    return Event;
++})({});
+\ No newline at end of file
+diff --git "a/.\\original_modules\\react-native-track-player\\/lib/web/TrackPlayer/Player.js" "b/.\\node_modules\\react-native-track-player\\/lib/web/TrackPlayer/Player.js"
+index 76a5241..4b53074 100644
+--- "a/.\\original_modules\\react-native-track-player\\/lib/web/TrackPlayer/Player.js"
++++ "b/.\\node_modules\\react-native-track-player\\/lib/web/TrackPlayer/Player.js"
+@@ -1,5 +1,7 @@
+ import { State } from '../../src/constants/State';
+ import { SetupNotCalledError } from './SetupNotCalledError';
++import shaka from 'shaka-player/dist/shaka-player.ui';
++
+ export class Player {
+     hasInitialized = false;
+     element;
+@@ -36,8 +38,8 @@ export class Player {
+             // TODO: double check the structure of this error message
+             throw { code: 'player_already_initialized', message: 'The player is not initialized. Call setupPlayer first.' };
+         }
+-        // @ts-ignore
+-        const shaka = await import('shaka-player/dist/shaka-player.ui');
++        
++        //const shaka = await import('shaka-player/dist/shaka-player.ui');
+         // Install built-in polyfills to patch browser incompatibilities.
+         shaka.polyfill.installAll();
+         // Check to see if the browser supports the basic APIs Shaka needs.
+diff --git "a/.\\original_modules\\react-native-track-player\\/lib/web/TrackPlayerModule.js" "b/.\\node_modules\\react-native-track-player\\/lib/web/TrackPlayerModule.js"
+index 1f10a40..fc3dae7 100644
+--- "a/.\\original_modules\\react-native-track-player\\/lib/web/TrackPlayerModule.js"
++++ "b/.\\node_modules\\react-native-track-player\\/lib/web/TrackPlayerModule.js"
+@@ -1,5 +1,6 @@
+ import { DeviceEventEmitter } from 'react-native';
+-import { Event, State } from '../src';
++import { State } from '../src/constants/State';
++import { Event } from '../src/constants/Event';
+ import { PlaylistPlayer, RepeatMode } from './TrackPlayer';
+ import { SetupNotCalledError } from './TrackPlayer/SetupNotCalledError';
+ export class TrackPlayerModule extends PlaylistPlayer {
+@@ -46,10 +47,12 @@ export class TrackPlayerModule extends PlaylistPlayer {
+     PITCH_ALGORITHM_VOICE = 'PITCH_ALGORITHM_VOICE';
+     // observe and emit state changes
+     get state() {
++        console.log(Event);
+         return super.state;
+     }
+     set state(newState) {
+         super.state = newState;
++        console.log(Event);
+         this.emitter.emit(Event.PlaybackState, newState);
+     }
+     async updateOptions(options) {
+diff --git "a/.\\original_modules\\react-native-track-player\\/lib/web/index.js" "b/.\\node_modules\\react-native-track-player\\/lib/web/index.js"
+index ad8108d..f4edd93 100644
+--- "a/.\\original_modules\\react-native-track-player\\/lib/web/index.js"
++++ "b/.\\node_modules\\react-native-track-player\\/lib/web/index.js"
+@@ -1,3 +1,3 @@
+ import { TrackPlayerModule } from './TrackPlayerModule';
+-const module = new TrackPlayerModule();
+-export default module;
++
++export default new TrackPlayerModule();
