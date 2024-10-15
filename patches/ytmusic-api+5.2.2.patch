@@ -1,0 +1,98 @@
+diff --git a/node_modules/ytmusic-api/dist/index.d.ts b/node_modules/ytmusic-api/dist/index.d.ts
+index 920bb51..f54af69 100644
+--- a/node_modules/ytmusic-api/dist/index.d.ts
++++ b/node_modules/ytmusic-api/dist/index.d.ts
+@@ -1830,6 +1830,7 @@ declare class YTMusic {
+      * Initializes the API
+      */
+     initialize(options?: {
++        baseURL?: string;
+         cookies?: string;
+         GL?: string;
+         HL?: string;
+diff --git a/node_modules/ytmusic-api/dist/index.js b/node_modules/ytmusic-api/dist/index.js
+index aaf716a..b381825 100644
+--- a/node_modules/ytmusic-api/dist/index.js
++++ b/node_modules/ytmusic-api/dist/index.js
+@@ -1829,26 +1829,25 @@ var SearchParser = class {
+ };
+ 
+ // src/YTMusic.ts
+-_axios2.default.defaults.headers.common["Accept-Encoding"] = "gzip";
+ var YTMusic = class {
+-  
+-  
+-  
++  constructor() {}
+   /**
+-   * Creates an instance of YTMusic
+-   * Make sure to call initialize()
++   * Initializes the API
+    */
+-  constructor() {
++  async initialize(options) {
+     this.cookiejar = new (0, _toughcookie.CookieJar)();
+     this.config = {};
+     this.client = _axios2.default.create({
+-      baseURL: "https://music.youtube.com/",
+-      headers: {
+-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36",
+-        "Accept-Language": "en-US,en;q=0.5"
+-      },
+-      withCredentials: true
++			baseURL: options?.baseURL
++				? options.baseURL
++				: "https://music.youtube.com/",
++      headers: {"Accept-Language": "en-US,en;q=0.5"},
++      withCredentials: true,
++      maxRedirects: 0
+     });
++    if (options?.baseURL)
++		  this.client.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
++
+     this.client.interceptors.request.use((req) => {
+       if (req.baseURL) {
+         const cookieString = this.cookiejar.getCookieStringSync(req.baseURL);
+@@ -1859,6 +1858,7 @@ var YTMusic = class {
+       return req;
+     });
+     this.client.interceptors.response.use((res) => {
++      console.log(res);
+       if (res.headers && res.config.baseURL) {
+         const cookieStrings = res.headers["set-cookie"] || [];
+         for (const cookieString of cookieStrings) {
+@@ -1870,11 +1870,7 @@ var YTMusic = class {
+       }
+       return res;
+     });
+-  }
+-  /**
+-   * Initializes the API
+-   */
+-  async initialize(options) {
++
+     const { cookies, GL, HL } = _nullishCoalesce(options, () => ( {}));
+     if (cookies) {
+       for (const cookieString of cookies.split("; ")) {
+@@ -1883,6 +1879,7 @@ var YTMusic = class {
+         this.cookiejar.setCookieSync(cookie, "https://www.youtube.com/");
+       }
+     }
++    
+     const html = (await this.client.get("/")).data;
+     const setConfigs = html.match(/ytcfg\.set\(.*\)/) || [];
+     const configs = setConfigs.map((c) => c.slice(10, -1)).map((s) => {
+@@ -1898,11 +1895,13 @@ var YTMusic = class {
+         ...config
+       };
+     }
++    
+     if (!this.config) {
+       this.config = {};
+     }
+     if (GL) this.config.GL = GL;
+     if (HL) this.config.HL = HL;
++    console.log(this.config);
+     return this;
+   }
+   /**

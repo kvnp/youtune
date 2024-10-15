@@ -63,7 +63,6 @@ export default function StreamModal() {
         return () => {
             castListener.remove();
             volumeListener.remove();
-            showStreamModal = null;
         };
     }, []);
 

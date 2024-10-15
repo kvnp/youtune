@@ -68,6 +68,7 @@ config.server = {
       }))
       .use('/proxy', createProxyMiddleware({
         target: 'https://music.youtube.com',
+        followRedirects: true,
         changeOrigin: true,
         secure: false,
         headers: {

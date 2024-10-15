@@ -6,22 +6,27 @@ import {
     Text
 } from "react-native";
 
-import { useTheme } from '@react-navigation/native';
+import { NavigationProp, useTheme } from '@react-navigation/native';
 import { TouchableRipple } from 'react-native-paper';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import { resultStyle } from '../../styles/Search';
 import { showMoreModal } from '../modals/MoreModal';
 import Navigation from '../../services/ui/Navigation';
+import { SearchResult } from "ytmusic-api";
 
-export default function Entry({ entry, navigation, index, forcedPlaylistId }) {
-    const { title, subtitle, artist, thumbnail, artwork,
-            videoId, browseId, playlistId } = entry;
+export default function Entry({ entry, navigation, index, forcedPlaylistId }: {entry: SearchResult, navigation: any, index?: number, forcedPlaylistId?: string}) {
+    const thumbnail: string = entry.thumbnails[entry.thumbnails.length - 1].url;
+    const title: string = entry.name;
+    const subtitle: string = entry.artist ? entry.artist.name : "";
+    const artistId: string = entry.artist ? entry.artist.artistId : "";
+    
+    const { videoId, albumId, browseId, playlistId } = entry;
 
     const view = {
         title: title,
-        subtitle: subtitle || artist,
-        thumbnail: thumbnail || artwork,
+        subtitle: subtitle,
+        thumbnail: thumbnail,
         videoId: videoId,
         browseId: browseId,
         playlistId: forcedPlaylistId
@@ -74,8 +79,8 @@ export default function Entry({ entry, navigation, index, forcedPlaylistId }) {
 
         <TouchableRipple
             borderless={true}
-            rippleColor={colors.primary}
-            onPress={() => showMoreModal(view)}
+            //rippleColor={colors.primary}
+            //onPress={() => showMoreModal(view)}
             style={{
                 justifyContent: "center",
                 borderRadius: 25,
