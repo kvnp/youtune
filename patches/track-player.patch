@@ -1,7 +1,7 @@
-diff --git "a/node_modules/react-native-track-player/lib/src/constants/Event.js" "b/node_modules/react-native-track-player/lib/src/constants/Event.js"
+diff --git a/node_modules/react-native-track-player/lib/src/constants/Event.js b/node_modules/react-native-track-player/lib/src/constants/Event.js
 index 9a5676d..396035a 100644
---- "a/node_modules/react-native-track-player/lib/src/constants/Event.js"
-+++ "b/node_modules/react-native-track-player/lib/src/constants/Event.js"
+--- a/node_modules/react-native-track-player/lib/src/constants/Event.js
++++ b/node_modules/react-native-track-player/lib/src/constants/Event.js
 @@ -1,5 +1,4 @@
 -export var Event;
 -(function (Event) {
@@ -21,10 +21,10 @@ index 9a5676d..396035a 100644
 +    return Event;
 +})({});
 \ No newline at end of file
-diff --git "a/node_modules/react-native-track-player/lib/web/TrackPlayer/Player.js" "b/node_modules/react-native-track-player/lib/web/TrackPlayer/Player.js"
-index 76a5241..4b53074 100644
---- "a/node_modules/react-native-track-player/lib/web/TrackPlayer/Player.js"
-+++ "b/node_modules/react-native-track-player/lib/web/TrackPlayer/Player.js"
+diff --git a/node_modules/react-native-track-player/lib/web/TrackPlayer/Player.js b/node_modules/react-native-track-player/lib/web/TrackPlayer/Player.js
+index 76a5241..5b41187 100644
+--- a/node_modules/react-native-track-player/lib/web/TrackPlayer/Player.js
++++ b/node_modules/react-native-track-player/lib/web/TrackPlayer/Player.js
 @@ -1,5 +1,7 @@
  import { State } from '../../src/constants/State';
  import { SetupNotCalledError } from './SetupNotCalledError';
@@ -33,7 +33,15 @@ index 76a5241..4b53074 100644
  export class Player {
      hasInitialized = false;
      element;
-@@ -36,8 +38,8 @@ export class Player {
+@@ -28,6 +30,7 @@ export class Player {
+     set playWhenReady(pwr) {
+         this._playWhenReady = pwr;
+     }
++
+     async setupPlayer() {
+         // shaka only runs in a browser
+         if (typeof window === 'undefined')
+@@ -36,8 +39,8 @@ export class Player {
              // TODO: double check the structure of this error message
              throw { code: 'player_already_initialized', message: 'The player is not initialized. Call setupPlayer first.' };
          }
@@ -44,10 +52,34 @@ index 76a5241..4b53074 100644
          // Install built-in polyfills to patch browser incompatibilities.
          shaka.polyfill.installAll();
          // Check to see if the browser supports the basic APIs Shaka needs.
-diff --git "a/node_modules/react-native-track-player/lib/web/TrackPlayer/PlaylistPlayer.js" "b/node_modules/react-native-track-player/lib/web/TrackPlayer/PlaylistPlayer.js"
+@@ -55,6 +58,8 @@ export class Player {
+         // build dom element and attach shaka-player
+         this.element = document.createElement('audio');
+         this.element.setAttribute('id', 'react-native-track-player');
++        navigator.mediaSession.playbackState = "none";
++        
+         this.player = new shaka.Player();
+         this.player?.attach(this.element);
+         // Listen for relevant events events.
+@@ -104,6 +109,14 @@ export class Player {
+             throw new SetupNotCalledError();
+         await this.player.load(track.url);
+         this.current = track;
++        navigator.mediaSession.metadata = new MediaMetadata({
++            title: track.title,
++            artist: track.artist,
++            artwork: [{
++                src: track.artwork,
++                type: 'image/png'
++            }]
++        });
+     }
+     async retry() {
+         if (!this.player)
+diff --git a/node_modules/react-native-track-player/lib/web/TrackPlayer/PlaylistPlayer.js b/node_modules/react-native-track-player/lib/web/TrackPlayer/PlaylistPlayer.js
 index b36ad21..deeb66c 100644
---- "a/node_modules/react-native-track-player/lib/web/TrackPlayer/PlaylistPlayer.js"
-+++ "b/node_modules/react-native-track-player/lib/web/TrackPlayer/PlaylistPlayer.js"
+--- a/node_modules/react-native-track-player/lib/web/TrackPlayer/PlaylistPlayer.js
++++ b/node_modules/react-native-track-player/lib/web/TrackPlayer/PlaylistPlayer.js
 @@ -1,6 +1,6 @@
  import { Player } from './Player';
  import { RepeatMode } from './RepeatMode';
@@ -56,22 +88,84 @@ index b36ad21..deeb66c 100644
  export class PlaylistPlayer extends Player {
      // TODO: use immer to make the `playlist` immutable
      playlist = [];
-diff --git "a/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js" "b/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js"
-index 1f10a40..b7a9fc1 100644
---- "a/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js"
-+++ "b/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js"
-@@ -1,5 +1,6 @@
+diff --git a/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js b/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js
+index 1f10a40..f384bfa 100644
+--- a/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js
++++ b/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js
+@@ -1,7 +1,9 @@
  import { DeviceEventEmitter } from 'react-native';
 -import { Event, State } from '../src';
 +import { State } from '../src/constants/State';
 +import { Event } from '../src/constants/Event';
  import { PlaylistPlayer, RepeatMode } from './TrackPlayer';
  import { SetupNotCalledError } from './TrackPlayer/SetupNotCalledError';
++
  export class TrackPlayerModule extends PlaylistPlayer {
-diff --git "a/node_modules/react-native-track-player/lib/web/index.js" "b/node_modules/react-native-track-player/lib/web/index.js"
+     emitter = DeviceEventEmitter;
+     progressUpdateEventInterval;
+@@ -50,10 +52,50 @@ export class TrackPlayerModule extends PlaylistPlayer {
+     }
+     set state(newState) {
+         super.state = newState;
++        if (newState.state === State.Playing)
++            navigator.mediaSession.playbackState = "playing";
++        else if (newState.state === State.Buffering)
++            navigator.mediaSession.playbackState = "playing";
++        else if (newState.state === State.Paused)
++            navigator.mediaSession.playbackState = "paused";
++        else if (newState.state === State.Stopped)
++            navigator.mediaSession.playbackState = "none";
++
+         this.emitter.emit(Event.PlaybackState, newState);
+     }
+     async updateOptions(options) {
+         this.setupProgressUpdates(options.progressUpdateEventInterval);
++        console.log(options);
++        if (options.capabilities) {
++            let actionHandlers = [];
++            if (options.capabilities.includes(this.CAPABILITY_PLAY))
++                actionHandlers.push(['play', () => this.emitter.emit(Event.RemotePlay)]);
++
++            if (options.capabilities.includes(this.CAPABILITY_PAUSE))
++                actionHandlers.push(['pause', () => this.emitter.emit(Event.RemotePause)]);
++
++            if (options.capabilities.includes(this.CAPABILITY_STOP))
++                actionHandlers.push(['stop', () => this.emitter.emit(Event.RemoteStop)]);
++
++            if (options.capabilities.includes(this.CAPABILITY_SEEK_TO)) {
++                actionHandlers.push(['seekbackward', () => this.emitter.emit(Event.RemoteJumpBackward)]);
++                actionHandlers.push(['seekforward', () => this.emitter.emit(Event.RemoteJumpForward)]);
++                actionHandlers.push(['seekto', e => this.emitter.emit(
++                    Event.RemoteSeek, { position: e.seekTime }
++                )]);
++            }
++
++            if (options.capabilities.includes(this.CAPABILITY_SKIP_TO_PREVIOUS))
++                actionHandlers.push(['previoustrack', () => this.emitter.emit(Event.RemotePrevious)]);
++
++            if (options.capabilities.includes(this.CAPABILITY_SKIP_TO_NEXT))
++                actionHandlers.push(['nexttrack', () => this.emitter.emit(Event.RemoteNext)]);
++
++            for (const [action, handler] of actionHandlers) {
++                try { navigator.mediaSession.setActionHandler(action, handler); }
++                catch { console.log(action + " is not supported yet"); }
++            }
++        }
+     }
+     setupProgressUpdates(interval) {
+         // clear and reset interval
+@@ -145,5 +187,4 @@ export class TrackPlayerModule extends PlaylistPlayer {
+     getPlaybackState() {
+         return this.state;
+     }
+-}
+-;
++};
+\ No newline at end of file
+diff --git a/node_modules/react-native-track-player/lib/web/index.js b/node_modules/react-native-track-player/lib/web/index.js
 index ad8108d..f4edd93 100644
---- "a/node_modules/react-native-track-player/lib/web/index.js"
-+++ "b/node_modules/react-native-track-player/lib/web/index.js"
+--- a/node_modules/react-native-track-player/lib/web/index.js
++++ b/node_modules/react-native-track-player/lib/web/index.js
 @@ -1,3 +1,3 @@
  import { TrackPlayerModule } from './TrackPlayerModule';
 -const module = new TrackPlayerModule();
