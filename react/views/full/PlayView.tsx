@@ -18,7 +18,7 @@ import Downloads from "../../services/device/Downloads";
 
 import SeekBar from "../../components/player/SeekBar";
 import SwipePlaylist from "../../components/player/SwipePlaylist";
-import { showModal } from "../../components/modals/MoreModal";
+import { showMoreModal } from "../../components/modals/MoreModal";
 import ScrollingText from "../../components/shared/ScrollingText";
 import CastButton from "../../components/player/CastButton";
 import Cast from "../../services/music/Cast";
@@ -281,7 +281,7 @@ const PlayView = ({route, navigation}) => {
                         labelStyle={{marginHorizontal: 0}}
                         style={[stylesTop.topThird, { borderRadius: 25, alignItems: "center", padding: 0, margin: 0, minWidth: 0}]}
                         contentStyle={{alignItems: "center", width: 50, height: 50, minWidth: 0}}
-                        onPress={() => showModal({
+                        onPress={() => showMoreModal({
                             title: title,
                             subtitle: artist,
                             thumbnail: artwork,

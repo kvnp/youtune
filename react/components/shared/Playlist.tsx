@@ -6,7 +6,7 @@ import { useTheme } from '@react-navigation/native';
 import { TouchableRipple } from 'react-native-paper';
 
 import Navigation from '../../services/ui/Navigation';
-import { showModal } from '../modals/MoreModal';
+import { showMoreModal } from '../modals/MoreModal';
 import { playlistStyle } from '../../styles/Playlist';
 
 export default function Playlist({ playlist, navigation, style, onPress }) {
@@ -27,7 +27,7 @@ export default function Playlist({ playlist, navigation, style, onPress }) {
     return (
         <TouchableRipple
             rippleColor={colors.primary}
-            onLongPress={() => showModal(view)}
+            onLongPress={() => showMoreModal(view)}
             onPress={
                 onPress
                     ? () => onPress()

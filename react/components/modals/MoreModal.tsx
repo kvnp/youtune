@@ -21,7 +21,12 @@ import ScrollingText from "../shared/ScrollingText";
 import { appColor } from "../../styles/App";
 import Music from "../../services/music/Music";
 
-export var showModal;
+export const showMoreModal = e => {
+    if (showModal)
+        showModal(e);
+};
+
+var showModal;
 var dlListener;
 var lkListener;
 var trListener;

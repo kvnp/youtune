@@ -9,7 +9,7 @@ import Navigation from '../../services/ui/Navigation';
 import Downloads from "../../services/device/Downloads";
 
 import { resultStyle } from '../../styles/Search';
-import { showModal } from '../modals/MoreModal';
+import { showMoreModal } from '../modals/MoreModal';
 
 export default function Entry({ entry, navigation, index, forcedPlaylistId }) {
     const { title, subtitle, artist, thumbnail, artwork,
@@ -39,7 +39,7 @@ export default function Entry({ entry, navigation, index, forcedPlaylistId }) {
         borderless={true}
         rippleColor={colors.primary}
         onPress={() => Navigation.handleMedia(view, false, navigation)}
-        onLongPress={() => showModal(view)}
+        onLongPress={() => showMoreModal(view)}
 
         style={{
             marginHorizontal: 5,
@@ -93,7 +93,7 @@ export default function Entry({ entry, navigation, index, forcedPlaylistId }) {
         <TouchableRipple
             borderless={true}
             rippleColor={colors.primary}
-            onPress={() => showModal(view)}
+            onPress={() => showMoreModal(view)}
             style={{
                 justifyContent: "center",
                 borderRadius: 25,

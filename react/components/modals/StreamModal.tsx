@@ -17,7 +17,12 @@ import { appColor } from "../../styles/App";
 import Music from "../../services/music/Music";
 import Cast from "../../services/music/Cast";
 
-export var showStreamModal;
+export const showStreamModal = e => {
+    if (showModal)
+        showModal(e);
+};
+
+var showModal;
 
 export default function StreamModal() {
     const {colors} = useTheme();
@@ -34,7 +39,7 @@ export default function StreamModal() {
     }
 
     useEffect(() => {
-        showStreamModal = () => {
+        showModal = () => {
             setVolume(Cast.volume);
             setVisible(true);
         };

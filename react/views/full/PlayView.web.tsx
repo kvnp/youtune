@@ -20,7 +20,7 @@ import HTTP from "../../services/api/HTTP";
 import { insertBeforeLast } from "../../utils/Navigation";
 import SeekBar from "../../components/player/SeekBar";
 import SwipePlaylist from "../../components/player/SwipePlaylist";
-import { showModal } from "../../components/modals/MoreModal";
+import { showMoreModal } from "../../components/modals/MoreModal";
 import ScrollingText from "../../components/shared/ScrollingText";
 import CastButton from "../../components/player/CastButton";
 import MusicVisualizerCanvas from "../../components/player/MusicVisualizerCanvas";
@@ -819,7 +819,7 @@ export default function PlayView({ route, navigation }) {
           </Button>
 
           <Button
-            onPress={() => showModal({
+            onPress={() => showMoreModal({
               title: title,
               subtitle: artist,
               thumbnail: artwork,

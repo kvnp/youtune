@@ -11,7 +11,7 @@ import { TouchableRipple } from 'react-native-paper';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import { resultStyle } from '../../styles/Search';
-import { showModal } from '../modals/MoreModal';
+import { showMoreModal } from '../modals/MoreModal';
 import Navigation from '../../services/ui/Navigation';
 
 export default function Entry({ entry, navigation, index, forcedPlaylistId }) {
@@ -35,7 +35,7 @@ export default function Entry({ entry, navigation, index, forcedPlaylistId }) {
         borderless={true}
         rippleColor={colors.primary}
         onPress={() => Navigation.handleMedia(view, false, navigation)}
-        onLongPress={() => showModal(view)}
+        onLongPress={() => showMoreModal(view)}
 
         style={{
             marginHorizontal: 5,
@@ -75,7 +75,7 @@ export default function Entry({ entry, navigation, index, forcedPlaylistId }) {
         <TouchableRipple
             borderless={true}
             rippleColor={colors.primary}
-            onPress={() => showModal(view)}
+            onPress={() => showMoreModal(view)}
             style={{
                 justifyContent: "center",
                 borderRadius: 25,

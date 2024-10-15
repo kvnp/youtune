@@ -45,16 +45,16 @@ export default function SwipeLyrics({playlist, track, backgroundColor, textColor
             return;
 
         container.current.innerHtml = "";
-        API.getLyrics(track)
-            .then(response => {
-                if (response == null)
-                    return;
+        // API.getLyrics(track)
+        //     .then(response => {
+        //         if (response == null)
+        //             return;
                 
-                for (let s of response.lyrics) {
-                    container.current.insertAdjacentText('beforeend', s);
-                    container.current.insertAdjacentHTML('beforeend', "<br>");
-                }
-            });
+        //         for (let s of response.lyrics) {
+        //             container.current.insertAdjacentText('beforeend', s);
+        //             container.current.insertAdjacentHTML('beforeend', "<br>");
+        //         }
+        //     });
     }, [track]);
 
     useEffect(() => {
