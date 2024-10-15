@@ -1,7 +1,7 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require('expo/metro-config');
 const connect = require('connect');
-const { legacyCreateProxyMiddleware, createProxyMiddleware } = require('http-proxy-middleware');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 
 /** @type { import('expo/metro-config').Config } */
@@ -33,8 +33,9 @@ config.server = {
   enhanceMiddleware: (metroMiddleware, metroServer) => {
     return connect()
       .use(metroMiddleware)
-      .use('/proxy/videoplayback', legacyCreateProxyMiddleware({
+      .use('/proxy/videoplayback', createProxyMiddleware({
         target: "https://redirector.googlevideo.com/videoplayback",
+        pathRewrite: {'^/proxy' : ''},
         changeOrigin: true,
         secure: false,
         followRedirects: true,
@@ -43,13 +44,11 @@ config.server = {
             "Origin": "https://www.youtube.com",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0",
             "Connection": "Keep-Alive"
-        },
-        pathRewrite: {'^/proxy' : ''}
-    }))
+        }
+      }))
       .use('/proxy/lh3', createProxyMiddleware({
         target: "https://lh3.googleusercontent.com",
         changeOrigin: true,
-
         headers: {
           "Referer": "https://www.youtube.com",
           "Origin": "https://www.youtube.com",
@@ -57,7 +56,7 @@ config.server = {
         }
       }))
       .use('/proxy/vi', createProxyMiddleware({
-        target: "https://i.ytimg.com",
+        target: "https://i.ytimg.com/vi",
         changeOrigin: true,
         pathRewrite: { '^/proxy': '' },
 
