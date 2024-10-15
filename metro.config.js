@@ -64,7 +64,7 @@ config.server = {
           "Referer": "https://www.youtube.com",
           "Origin": "https://www.youtube.com",
           "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0"
-        }
+        },
       }))
       .use('/proxy', createProxyMiddleware({
         target: 'https://music.youtube.com',
@@ -75,6 +75,24 @@ config.server = {
           "Referer": "https://music.youtube.com",
           "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0",
         },
+        
+        on: {
+          proxyReq: (proxyReq, req, res) => {
+            // if (req.headers.cookie)
+            //   req.headers.cookie = req.headers.cookie.replace(/(Domain=.*?;)/, "Domain=.youtube.com");
+          },
+
+          proxyRes: (proxyRes, req, res) => {
+            proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+            if (proxyRes.headers["set-cookie"])
+              proxyRes.headers["set-cookie"] = proxyRes.headers["set-cookie"].map(
+                cookie => cookie.replace(
+                  /(Domain=.*?;)/,
+                  "Domain=" + req.headers.host.split(":")[0]
+                )
+              );
+          }
+        }
       }))
   },
 }
