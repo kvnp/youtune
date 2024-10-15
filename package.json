@@ -9,13 +9,16 @@
     "node": ">=21.0.0"
   },
   "scripts": {
-    "start": "expo start --clear",
+    "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
     "postinstall": "patch-package"
+  },
+  "jest": {
+    "preset": "jest-expo"
   },
   "dependencies": {
     "@expo/metro-runtime": "^3.2.3",
@@ -29,6 +32,7 @@
     "events": "^3.3.0",
     "expo": "^51.0.38",
     "expo-dev-client": "~4.0.28",
+    "metro-config": "^0.81.0",
     "patch-package": "^8.0.0",
     "queue-promise": "^2.2.1",
     "react": "~18.2.0",
@@ -55,6 +59,8 @@
     "rimraf": "^6.0.1",
     "glob": "^11.0.0",
     "npm-package-arg": "^12.0.0",
+    "querystring": "npm:query-string@9.1.1",
+    "jest-environment-jsdom": "@jest/environment-jsdom-abstract",
     "@babel/plugin-proposal-numeric-separator": "@babel/plugin-transform-numeric-separator",
     "@babel/plugin-proposal-class-properties": "@babel/plugin-transform-class-properties",
     "@babel/plugin-proposal-optional-catch-binding": "@babel/plugin-transform-optional-catch-binding",
@@ -74,6 +80,7 @@
     "@types/react-test-renderer": "^18.3.0",
     "http-proxy-middleware": "^3.0.3",
     "jest": "^29.7.0",
+    "jest-expo": "^51.0.4",
     "react-test-renderer": "~18.2.0",
     "typescript": "~5.3.3"
   }

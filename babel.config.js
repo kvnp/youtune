@@ -4,11 +4,6 @@ export default function (api) {
 
   return {
     presets: ["babel-preset-expo"],
-    plugins: [
-      ["transform-react-remove-prop-types", {
-        removeImport: true,
-        additionalLibraries: ["react-style-proptype"]
-      }],
-    ]
+    plugins: []
   };
 };

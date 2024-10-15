@@ -1,0 +1,27 @@
+diff --git a/node_modules/jest-expo/config/custom-jsdom-env.js b/node_modules/jest-expo/config/custom-jsdom-env.js
+new file mode 100644
+index 0000000..cddb398
+--- /dev/null
++++ b/node_modules/jest-expo/config/custom-jsdom-env.js
+@@ -0,0 +1,7 @@
++const { default: TestEnvironment } = require('@jest/environment-jsdom-abstract');
++
++module.exports = class JSDOMEnv extends TestEnvironment {
++  constructor(config, context) {
++    super(config, context, require('jsdom'));
++  }
++}
+\ No newline at end of file
+diff --git a/node_modules/jest-expo/config/getPlatformPreset.js b/node_modules/jest-expo/config/getPlatformPreset.js
+index 031f93c..db760c1 100644
+--- a/node_modules/jest-expo/config/getPlatformPreset.js
++++ b/node_modules/jest-expo/config/getPlatformPreset.js
+@@ -81,7 +81,7 @@ module.exports = {
+     return {
+       ...getBaseWebPreset(),
+       ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web'], 'web'),
+-      testEnvironment: 'jsdom',
++      testEnvironment: './custom-jsdom-env.js',
+     };
+   },
+   getNodePreset() {
