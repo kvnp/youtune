@@ -1,6 +1,6 @@
+import '@expo/metro-runtime';
 import { useState, useEffect, useRef } from "react";
 import { Provider } from 'react-native-paper';
-import { View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
