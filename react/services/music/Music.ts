@@ -99,10 +99,11 @@ export default class Music {
 
                 if (params.state != State.Playing) {
                     clearInterval(Music.#positionInterval);
-                    TrackPlayer.getPosition().then(position => Music.position = position);
+                    TrackPlayer.getProgress()
+                        .then(progress => Music.position = progress.position);
                 } else if (params.state != Music.state) {
                     Music.#positionInterval = window.setInterval(async() =>
-                        Music.position = await TrackPlayer.getPosition()
+                        Music.position = (await TrackPlayer.getProgress()).position
                     , 500);
                 }
                 
@@ -112,28 +113,30 @@ export default class Music {
                 Music.state = params.state;
             });
     
-            TrackPlayer.addEventListener(Event.PlaybackTrackChanged, params => {
+            TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, params => {
                 if (Music.isStreaming)
                     return;
 
-                if (Music.index != params.nextTrack) {
-                    Music.index = params.nextTrack;
+                if (Music.index != params.index) {
+                    Music.index = params.index!;
                     Music.position = 0;
                 }
 
-                if (params.nextTrack < Music.list.length && params.nextTrack >= 0) {
-                    if (!Music.trackUrlLoaded[params.nextTrack])
-                        Music.enqueue(params.nextTrack);
-                    else
-                        Music.play();
-                }
+                if (params.index) {
+                    if (params.index < Music.list.length && params.index >= 0) {
+                        if (!Music.trackUrlLoaded[params.index])
+                            Music.enqueue(params.index);
+                        else
+                            Music.play();
+                    }
 
-                for (let i = params.nextTrack + 1; i < params.nextTrack + 2; i++) {
-                    if (i >= Music.list.length)
-                        break;
-                    
-                    if (!Music.trackUrlLoaded[i])
-                        Music.enqueue(i);
+                    for (let i = params.index + 1; i < params.index + 2; i++) {
+                        if (i >= Music.list.length)
+                            break;
+                        
+                        if (!Music.trackUrlLoaded[i])
+                            Music.enqueue(i);
+                    }
                 }
             });
     
@@ -169,8 +172,9 @@ export default class Music {
             });
     
             TrackPlayer.addEventListener(Event.RemoteJumpForward, async() => {
-                let position = await TrackPlayer.getPosition();
-                let duration = await TrackPlayer.getDuration();
+                const progress = await TrackPlayer.getProgress();
+                let position = progress.position;
+                let duration = progress.duration;
                 position += 10;
                 if (position > duration) position = duration;
     
@@ -178,7 +182,7 @@ export default class Music {
             });
     
             TrackPlayer.addEventListener(Event.RemoteJumpBackward, async() => {
-                let position = await TrackPlayer.getPosition();
+                let position = (await TrackPlayer.getProgress()).position;
                 position -= 10;
                 if (position < 0)
                     position = 0;
@@ -262,7 +266,9 @@ export default class Music {
     static initialize() {
         return new Promise(async(resolve, reject) => {
             TrackPlayer.registerPlaybackService(Music.TrackPlayerTaskProvider);
-            await TrackPlayer.setupPlayer({});
+            await TrackPlayer.setupPlayer({
+                
+            });
             await TrackPlayer.updateOptions(TrackPlayerOptions);
             TrackPlayer.setRepeatMode(Music.repeatMode);
 

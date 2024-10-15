@@ -58,7 +58,8 @@ function MusicVisualizerCanvas({canvasRef}: {canvasRef: React.MutableRefObject<H
             ctx = canvas.current.getContext("2d");
             if (!Music.audioContext) {
                 Music.audioContext = new AudioContext();
-                if (!audio) audio = document.getElementsByTagName("audio")[0];
+                if (!audio)
+                    audio = window.rntp.getMediaElement();
                 let src = Music.audioContext.createMediaElementSource(audio);
                 analyser = Music.audioContext.createAnalyser();
 
