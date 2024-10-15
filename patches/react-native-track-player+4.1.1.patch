@@ -89,7 +89,7 @@ index b36ad21..deeb66c 100644
      // TODO: use immer to make the `playlist` immutable
      playlist = [];
 diff --git a/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js b/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js
-index 1f10a40..f384bfa 100644
+index 1f10a40..87c7381 100644
 --- a/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js
 +++ b/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js
 @@ -1,7 +1,9 @@
@@ -125,10 +125,10 @@ index 1f10a40..f384bfa 100644
 +            let actionHandlers = [];
 +            if (options.capabilities.includes(this.CAPABILITY_PLAY))
 +                actionHandlers.push(['play', () => this.emitter.emit(Event.RemotePlay)]);
-+
++            
 +            if (options.capabilities.includes(this.CAPABILITY_PAUSE))
 +                actionHandlers.push(['pause', () => this.emitter.emit(Event.RemotePause)]);
-+
++            
 +            if (options.capabilities.includes(this.CAPABILITY_STOP))
 +                actionHandlers.push(['stop', () => this.emitter.emit(Event.RemoteStop)]);
 +
@@ -136,32 +136,24 @@ index 1f10a40..f384bfa 100644
 +                actionHandlers.push(['seekbackward', () => this.emitter.emit(Event.RemoteJumpBackward)]);
 +                actionHandlers.push(['seekforward', () => this.emitter.emit(Event.RemoteJumpForward)]);
 +                actionHandlers.push(['seekto', e => this.emitter.emit(
-+                    Event.RemoteSeek, { position: e.seekTime }
++                        Event.RemoteSeek, {position: e.seekTime}
 +                )]);
 +            }
 +
 +            if (options.capabilities.includes(this.CAPABILITY_SKIP_TO_PREVIOUS))
 +                actionHandlers.push(['previoustrack', () => this.emitter.emit(Event.RemotePrevious)]);
-+
++            
 +            if (options.capabilities.includes(this.CAPABILITY_SKIP_TO_NEXT))
 +                actionHandlers.push(['nexttrack', () => this.emitter.emit(Event.RemoteNext)]);
 +
 +            for (const [action, handler] of actionHandlers) {
 +                try { navigator.mediaSession.setActionHandler(action, handler); }
-+                catch { console.log(action + " is not supported yet"); }
++                catch{ console.log(action + " is not supported yet"); }
 +            }
 +        }
      }
      setupProgressUpdates(interval) {
          // clear and reset interval
-@@ -145,5 +187,4 @@ export class TrackPlayerModule extends PlaylistPlayer {
-     getPlaybackState() {
-         return this.state;
-     }
--}
--;
-+};
-\ No newline at end of file
 diff --git a/node_modules/react-native-track-player/lib/web/index.js b/node_modules/react-native-track-player/lib/web/index.js
 index ad8108d..f4edd93 100644
 --- a/node_modules/react-native-track-player/lib/web/index.js
