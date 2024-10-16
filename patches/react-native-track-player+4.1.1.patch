@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-track-player/lib/src/constants/Event.js b/node_modules/react-native-track-player/lib/src/constants/Event.js
-index 9a5676d..396035a 100644
+index 9a5676d..c56b437 100644
 --- a/node_modules/react-native-track-player/lib/src/constants/Event.js
 +++ b/node_modules/react-native-track-player/lib/src/constants/Event.js
 @@ -1,5 +1,4 @@
@@ -9,15 +9,12 @@ index 9a5676d..396035a 100644
      Event["PlayerError"] = "player-error";
      /** Fired when the state of the player changes. */
      Event["PlaybackState"] = "playback-state";
-@@ -131,4 +130,9 @@ export var Event;
+@@ -131,4 +130,6 @@ export var Event;
       * See https://rntp.dev/docs/api/events#commonmetadatareceived
       **/
      Event["MetadataCommonReceived"] = "metadata-common-received";
 -})(Event || (Event = {}));
-+
-+    console.log("console.log(Event);");
-+    console.log(Event);
-+
++    
 +    return Event;
 +})({});
 \ No newline at end of file
@@ -89,7 +86,7 @@ index b36ad21..deeb66c 100644
      // TODO: use immer to make the `playlist` immutable
      playlist = [];
 diff --git a/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js b/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js
-index 1f10a40..87c7381 100644
+index 1f10a40..bca268e 100644
 --- a/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js
 +++ b/node_modules/react-native-track-player/lib/web/TrackPlayerModule.js
 @@ -1,7 +1,9 @@
@@ -103,7 +100,7 @@ index 1f10a40..87c7381 100644
  export class TrackPlayerModule extends PlaylistPlayer {
      emitter = DeviceEventEmitter;
      progressUpdateEventInterval;
-@@ -50,10 +52,50 @@ export class TrackPlayerModule extends PlaylistPlayer {
+@@ -50,10 +52,49 @@ export class TrackPlayerModule extends PlaylistPlayer {
      }
      set state(newState) {
          super.state = newState;
@@ -120,7 +117,6 @@ index 1f10a40..87c7381 100644
      }
      async updateOptions(options) {
          this.setupProgressUpdates(options.progressUpdateEventInterval);
-+        console.log(options);
 +        if (options.capabilities) {
 +            let actionHandlers = [];
 +            if (options.capabilities.includes(this.CAPABILITY_PLAY))
@@ -148,7 +144,7 @@ index 1f10a40..87c7381 100644
 +
 +            for (const [action, handler] of actionHandlers) {
 +                try { navigator.mediaSession.setActionHandler(action, handler); }
-+                catch{ console.log(action + " is not supported yet"); }
++                catch{ console.error(action + " is not supported yet"); }
 +            }
 +        }
      }

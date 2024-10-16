@@ -12,12 +12,13 @@ import { useTheme } from '@react-navigation/native';
 import { Button } from 'react-native-paper';
 
 import API from '../../services/api/API';
-import Shelf from '../../components/shared/Shelf';
+import Section from '../../components/collections/Section';
 import { shelvesStyle } from '../../styles/Shelves';
 import { preResultHomeStyle } from '../../styles/Home';
+import { HomeSection } from 'ytmusic-api';
 
-export default function HomeTab({navigation}) {
-    const [shelves, setShelves] = useState([]);
+export default function HomeTab({navigation}: {navigation: any}) {
+    const [sections, setSections] = useState<HomeSection[]>([]);
     const [loading, setLoading] = useState(false);
     const { colors } = useTheme();
     const [homeText, setHomeText] = useState(
@@ -26,15 +27,10 @@ export default function HomeTab({navigation}) {
             : "Pull down to load"
     );
 
-    useEffect(() => {
-        if (shelves.length == 0)
-            startRefresh();
-    }, []);
-
     const startRefresh = () => {
         API.initialize()
             .then(() => {
-                setShelves(API.initialData.shelves);
+                setSections(API.YTMusic.getInitialHomeSections());
                 setLoading(false);
             })
             .catch(() => {
@@ -42,19 +38,46 @@ export default function HomeTab({navigation}) {
             });
     }
 
+    useEffect(() => {
+        startRefresh();
+    }, []);
+
     return <FlatList
-        style={shelvesStyle.scrollView}
         contentContainerStyle={shelvesStyle.scrollContainer}
 
         ListEmptyComponent={
             loading
-            ? <View style={[shelvesStyle.scrollView, shelvesStyle.scrollContainer]}>
-                <ActivityIndicator color={colors.text} size="large"/>
+            ? <View
+                style={shelvesStyle.scrollContainer}
+            >
+                <ActivityIndicator
+                    color={colors.text}
+                    size="large"
+                />
             </View>
 
-            : <Pressable onPress={Platform.OS == "web" ? () => startRefresh() :null}>
-                <Text style={[preResultHomeStyle.preHomeBottomText, preResultHomeStyle.preHomeTopText, {color: colors.text}]}>🏠</Text>
-                <Text style={[preResultHomeStyle.preHomeBottomText, {color: colors.text}]}>
+            : <Pressable
+                onPress={
+                    Platform.OS == "web"
+                        ? () => startRefresh()
+                        : null
+                }
+            >
+                <Text
+                    style={[
+                        preResultHomeStyle.preHomeBottomText,
+                        preResultHomeStyle.preHomeTopText,
+                        {color: colors.text}
+                    ]}
+                >
+                    🏠
+                </Text>
+                <Text
+                    style={[
+                        preResultHomeStyle.preHomeBottomText,
+                        {color: colors.text}
+                    ]}
+                >
                     {homeText}
                 </Text>
             </Pressable>
@@ -67,11 +90,20 @@ export default function HomeTab({navigation}) {
         ListFooterComponent={
             Platform.OS == "web"
                 ? loading
-                    ? <View style={[shelvesStyle.scrollView, shelvesStyle.scrollContainer]}>
-                        <ActivityIndicator color={colors.text} size="large"/>
+                    ? <View
+                        style={shelvesStyle.scrollContainer}
+                    >
+                        <ActivityIndicator
+                            color={colors.text}
+                            size="large"
+                        />
                     </View>
 
-                    : <Button style={{marginHorizontal: 50}} onPress={() => startRefresh()} mode="outlined">
+                    : <Button
+                        style={{marginHorizontal: 50}}
+                        onPress={() => startRefresh()}
+                        mode="outlined"
+                    >
                         <Text style={{color: colors.text}}>Refresh</Text>
                     </Button>
 
@@ -80,7 +112,13 @@ export default function HomeTab({navigation}) {
 
         progressViewOffset={0}
 
-        renderItem={({item}) => <Shelf shelf={item} navigation={navigation}/>}
+        renderItem={({item}) => 
+            <Section
+                section={item}
+                type="horizontal"
+                navigation={navigation}
+            />
+        }
 
         refreshing={loading}
         onRefresh={
@@ -90,12 +128,12 @@ export default function HomeTab({navigation}) {
         }
 
         ListFooterComponentStyle={
-            shelves.length == 0 
+            sections.length == 0 
             ? {display: "none"}
             : {paddingBottom: 20}
         }
 
-        data={shelves}
+        data={sections}
         keyExtractor={item => item.title}
     />
 };

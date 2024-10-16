@@ -1,8 +1,16 @@
 diff --git a/node_modules/ytmusic-api/dist/index.d.ts b/node_modules/ytmusic-api/dist/index.d.ts
-index 920bb51..f54af69 100644
+index 920bb51..7ab3143 100644
 --- a/node_modules/ytmusic-api/dist/index.d.ts
 +++ b/node_modules/ytmusic-api/dist/index.d.ts
-@@ -1830,6 +1830,7 @@ declare class YTMusic {
+@@ -1821,6 +1821,7 @@ declare class YTMusic {
+     private cookiejar;
+     private config?;
+     private client;
++    public initialData;
+     /**
+      * Creates an instance of YTMusic
+      * Make sure to call initialize()
+@@ -1830,6 +1831,7 @@ declare class YTMusic {
       * Initializes the API
       */
      initialize(options?: {
@@ -10,8 +18,21 @@ index 920bb51..f54af69 100644
          cookies?: string;
          GL?: string;
          HL?: string;
+@@ -1956,6 +1958,12 @@ declare class YTMusic {
+      * @returns Mixed HomeSection
+      */
+     getHomeSections(): Promise<HomeSection[]>;
++    /**
++     * Get sections for the home page from initial data.
++     *
++     * @returns Mixed HomeSection
++     */
++    getInitialHomeSections(): HomeSection[];
+ }
+ 
+ export { AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic, ArtistDetailed, ArtistFull, HomeSection, PlaylistDetailed, PlaylistFull, SearchResult, SongDetailed, SongFull, ThumbnailFull, VideoDetailed, VideoFull, YTMusic as default };
 diff --git a/node_modules/ytmusic-api/dist/index.js b/node_modules/ytmusic-api/dist/index.js
-index aaf716a..b381825 100644
+index aaf716a..83a725e 100644
 --- a/node_modules/ytmusic-api/dist/index.js
 +++ b/node_modules/ytmusic-api/dist/index.js
 @@ -1829,26 +1829,25 @@ var SearchParser = class {
@@ -53,15 +74,7 @@ index aaf716a..b381825 100644
      this.client.interceptors.request.use((req) => {
        if (req.baseURL) {
          const cookieString = this.cookiejar.getCookieStringSync(req.baseURL);
-@@ -1859,6 +1858,7 @@ var YTMusic = class {
-       return req;
-     });
-     this.client.interceptors.response.use((res) => {
-+      console.log(res);
-       if (res.headers && res.config.baseURL) {
-         const cookieStrings = res.headers["set-cookie"] || [];
-         for (const cookieString of cookieStrings) {
-@@ -1870,11 +1870,7 @@ var YTMusic = class {
+@@ -1870,11 +1869,7 @@ var YTMusic = class {
        }
        return res;
      });
@@ -74,7 +87,7 @@ index aaf716a..b381825 100644
      const { cookies, GL, HL } = _nullishCoalesce(options, () => ( {}));
      if (cookies) {
        for (const cookieString of cookies.split("; ")) {
-@@ -1883,6 +1879,7 @@ var YTMusic = class {
+@@ -1883,6 +1878,7 @@ var YTMusic = class {
          this.cookiejar.setCookieSync(cookie, "https://www.youtube.com/");
        }
      }
@@ -82,17 +95,31 @@ index aaf716a..b381825 100644
      const html = (await this.client.get("/")).data;
      const setConfigs = html.match(/ytcfg\.set\(.*\)/) || [];
      const configs = setConfigs.map((c) => c.slice(10, -1)).map((s) => {
-@@ -1898,11 +1895,13 @@ var YTMusic = class {
+@@ -1898,6 +1894,16 @@ var YTMusic = class {
          ...config
        };
      }
++
++    var initialData = [];
++    var initialDataSlice = html.slice(html.indexOf("initialData = [];"));
++    initialDataSlice = initialDataSlice.slice(0, initialDataSlice.indexOf(";ytcfg.set({'YTM"));
++    eval(initialDataSlice);
++    for (const index in initialData) {
++      initialData[index].data = JSON.parse(initialData[index].data);
++    }
++    this.initialData = initialData
 +    
      if (!this.config) {
        this.config = {};
      }
-     if (GL) this.config.GL = GL;
-     if (HL) this.config.HL = HL;
-+    console.log(this.config);
-     return this;
+@@ -2253,6 +2259,10 @@ var YTMusic = class {
+     }
+     return sections.map(Parser.parseHomeSection);
    }
-   /**
++
++  getInitialHomeSections() {
++    return this.initialData[1].data.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents.map(Parser.parseHomeSection);
++  }
+ };
+ 
+ // src/index.ts

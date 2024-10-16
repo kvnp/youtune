@@ -15,7 +15,13 @@ import { showMoreModal } from '../modals/MoreModal';
 import Navigation from '../../services/ui/Navigation';
 import { SearchResult } from "ytmusic-api";
 
-export default function Entry({ entry, navigation, index, forcedPlaylistId }: {entry: SearchResult, navigation: any, index?: number, forcedPlaylistId?: string}) {
+type EntryProps = {
+    entry: SearchResult;
+    navigation: NavigationProp<any>;
+    index?: number;
+}
+
+export default function Entry({ entry, navigation, index }: EntryProps) {
     const thumbnail: string = entry.thumbnails[entry.thumbnails.length - 1].url;
     const title: string = entry.name;
     const subtitle: string = entry.artist ? entry.artist.name : "";
@@ -29,9 +35,7 @@ export default function Entry({ entry, navigation, index, forcedPlaylistId }: {e
         thumbnail: thumbnail,
         videoId: videoId,
         browseId: browseId,
-        playlistId: forcedPlaylistId
-            ? forcedPlaylistId
-            : playlistId,
+        playlistId: playlistId,
     };
 
     const { colors } = useTheme();

@@ -12,7 +12,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import LinearGradient from "react-native-linear-gradient";
 
 import API from "../../services/api/API";
-import FlatShelves from "../../components/collections/FlatShelves";
+import FlatSections from "../../components/collections/FlatSections";
 
 import { bottomBarStyle } from "../../styles/BottomBar";
 import { rippleConfig } from "../../styles/Ripple";
@@ -41,7 +41,7 @@ export default function ArtistView({ route, navigation }) {
         : null;
     
     return <>
-        <FlatShelves shelves={shelves} navigation={navigation}/>
+        <FlatSections shelves={shelves} navigation={navigation}/>
 
         <ImageBackground style={bottomBarStyle.container} source={{uri: artist == null ? null : artist.header.thumbnail}}>
             <LinearGradient style={bottomBarStyle.artistGradientStyle} colors={dark ? gradientColorsDark : gradientColors}>

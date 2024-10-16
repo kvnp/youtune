@@ -13,7 +13,6 @@ import API from "../../services/api/API";
 import Navigation from "../../services/ui/Navigation";
 import Downloads from "../../services/device/Downloads";
 
-import FlatEntries from "../../components/collections/FlatEntries";
 import { insertBeforeLast } from "../../utils/Navigation";
 import { bottomBarStyle,bottomBarAlbumStyle } from "../../styles/BottomBar";
 import { rippleConfig } from "../../styles/Ripple";
@@ -75,7 +74,7 @@ export default function PlaylistView({ route, navigation }) {
                 <ActivityIndicator/>
             </View>
 
-            : <FlatEntries
+            : <VerticalElements
                 entries={entries}
                 isPlaylist={true}
                 playlistId={route.params.list}

@@ -15,11 +15,17 @@ export default class API {
   static EVENT_API_INITIALIZED = "event-api-initialized";
 
   static YTMusic = new YTMusic();
-  static initialized = false;
+  static initialized = 0; // 0: not initialized, 1: initializing, 2: initialized
   static initialize() {
     return new Promise((resolve, reject) => {
-      if (this.initialized)
+      if (this.initialized == 2)
         return resolve(true);
+      else if (this.initialized == 1)
+        return new Promise((resolve, reject) => {
+          API.addListener(API.EVENT_API_INITIALIZED, () => {
+            resolve(true);
+          })
+        });
 
       const baseURL = Platform.OS == "web"
         ? window.location.origin + "/proxy"
@@ -27,20 +33,11 @@ export default class API {
 
       API.YTMusic.initialize({ baseURL })
         .then(_ytm => {
-          API.initialized = true;
+          API.initialized = 2;
+          UI.setHeader({ url: API.YTMusic.initialData[1].data.background.musicThumbnailRenderer.thumbnail.thumbnails[0].url });
           this.#emitter.emit(API.EVENT_API_INITIALIZED);
           resolve(true);
         });
-
-      // API.getBrowseData("FEmusic_home")
-      //   .then(response => {
-      //     API.initialData = response;
-      //     if (API.initialData.picture)
-      //       UI.setHeader({ url: API.initialData.picture });
-
-      //     this.initialized = true;
-      //     resolve(true);
-      //   });
     });
   }
 
