@@ -1,0 +1,434 @@
+diff --git a/node_modules/ytmusic-api/dist/index.d.ts b/node_modules/ytmusic-api/dist/index.d.ts
+index 16b77f8..f48261a 100644
+--- a/node_modules/ytmusic-api/dist/index.d.ts
++++ b/node_modules/ytmusic-api/dist/index.d.ts
+@@ -1949,6 +1949,7 @@ declare class YTMusic {
+     private cookiejar;
+     private config?;
+     private client;
++    public initialData;
+     /**
+      * Creates an instance of YTMusic
+      * Make sure to call initialize()
+@@ -1961,6 +1962,8 @@ declare class YTMusic {
+         cookies?: string;
+         GL?: string;
+         HL?: string;
++        baseURL?: string;
++        headers?: object
+     }): Promise<this | undefined>;
+     /**
+      * Constructs a basic YouTube Music API request with all essential headers
+@@ -2084,6 +2087,12 @@ declare class YTMusic {
+      * @returns Mixed HomeSection
+      */
+     getHomeSections(): Promise<HomeSection[]>;
++    /**
++     * Get sections for the home page from initial data.
++     *
++     * @returns Mixed HomeSection
++     */
++    getInitialHomeSections(): Promise<HomeSection[]>;
+     /**
+      * Get content for next song.
+      *
+@@ -2093,7 +2102,7 @@ declare class YTMusic {
+      *
+      * @returns List of the next song
+      */
+-    getNext(videoId: string, listId: string, params?: string): Promise<NextResult[]>;
++    getNext(videoId: string, listId?: string, params?: string): Promise<NextResult[]>;
+ }
+ 
+ export { AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic, ArtistDetailed, ArtistFull, HomeSection, NextResult, PlaylistDetailed, PlaylistFull, SearchResult, SongDetailed, SongFull, ThumbnailFull, VideoDetailed, VideoFull, YTMusic as default };
+diff --git a/node_modules/ytmusic-api/dist/index.js b/node_modules/ytmusic-api/dist/index.js
+index 27d03fd..c6de422 100644
+--- a/node_modules/ytmusic-api/dist/index.js
++++ b/node_modules/ytmusic-api/dist/index.js
+@@ -1,4 +1,4 @@
+-"use strict";Object.defineProperty(exports, "__esModule", {value: true}); function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; } function _nullishCoalesce(lhs, rhsFn) { if (lhs != null) { return lhs; } else { return rhsFn(); } } function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }// src/YTMusic.ts
++"use strict"; Object.defineProperty(exports, "__esModule", { value: true }); function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; } function _nullishCoalesce(lhs, rhsFn) { if (lhs != null) { return lhs; } else { return rhsFn(); } } function _optionalChain(ops) { let lastAccessLHS = undefined; let value = ops[0]; let i = 1; while (i < ops.length) { const op = ops[i]; const fn = ops[i + 1]; i += 2; if ((op === 'optionalAccess' || op === 'optionalCall') && value == null) { return undefined; } if (op === 'access' || op === 'optionalAccess') { lastAccessLHS = value; value = fn(value); } else if (op === 'call' || op === 'optionalCall') { value = fn((...args) => value.call(lastAccessLHS, ...args)); lastAccessLHS = undefined; } } return value; }// src/YTMusic.ts
+ var _axios = require('axios'); var _axios2 = _interopRequireDefault(_axios);
+ var _toughcookie = require('tough-cookie');
+ 
+@@ -304,7 +304,7 @@ var parseCatchDef = (def, refs) => {
+ 
+ // node_modules/zod-to-json-schema/dist/esm/parsers/date.js
+ function parseDateDef(def, refs, overrideDateStrategy) {
+-  const strategy = _nullishCoalesce(overrideDateStrategy, () => ( refs.dateStrategy));
++  const strategy = _nullishCoalesce(overrideDateStrategy, () => (refs.dateStrategy));
+   if (Array.isArray(strategy)) {
+     return {
+       anyOf: strategy.map((item, i) => parseDateDef(def, refs, item))
+@@ -754,7 +754,7 @@ function parseRecordDef(def, refs) {
+         [key]: _nullishCoalesce(parseDef(def.valueType._def, {
+           ...refs,
+           currentPath: [...refs.currentPath, "properties", key]
+-        }), () => ( {}))
++        }), () => ({}))
+       }), {}),
+       additionalProperties: false
+     };
+@@ -764,7 +764,7 @@ function parseRecordDef(def, refs) {
+     additionalProperties: _nullishCoalesce(parseDef(def.valueType._def, {
+       ...refs,
+       currentPath: [...refs.currentPath, "additionalProperties"]
+-    }), () => ( {}))
++    }), () => ({}))
+   };
+   if (refs.target === "openApi3") {
+     return schema;
+@@ -997,12 +997,12 @@ function decideAdditionalProperties(def, refs) {
+     return def.catchall._def.typeName === "ZodNever" ? def.unknownKeys !== "strict" : _nullishCoalesce(parseDef(def.catchall._def, {
+       ...refs,
+       currentPath: [...refs.currentPath, "additionalProperties"]
+-    }), () => ( true));
++    }), () => (true));
+   } else {
+     return def.catchall._def.typeName === "ZodNever" ? def.unknownKeys === "passthrough" : _nullishCoalesce(parseDef(def.catchall._def, {
+       ...refs,
+       currentPath: [...refs.currentPath, "additionalProperties"]
+-    }), () => ( true));
++    }), () => (true));
+   }
+ }
+ function parseObjectDef(def, refs) {
+@@ -1279,13 +1279,13 @@ var zodToJsonSchema = (schema, options) => {
+     [name2]: _nullishCoalesce(parseDef(schema2._def, {
+       ...refs,
+       currentPath: [...refs.basePath, refs.definitionPath, name2]
+-    }, true), () => ( {}))
++    }, true), () => ({}))
+   }), {}) : void 0;
+   const name = typeof options === "string" ? options : _optionalChain([options, 'optionalAccess', _33 => _33.nameStrategy]) === "title" ? void 0 : _optionalChain([options, 'optionalAccess', _34 => _34.name]);
+   const main = _nullishCoalesce(parseDef(schema._def, name === void 0 ? refs : {
+     ...refs,
+     currentPath: [...refs.basePath, refs.definitionPath, name]
+-  }, false), () => ( {}));
++  }, false), () => ({}));
+   const title = typeof options === "object" && options.name !== void 0 && options.nameStrategy === "title" ? options.name : void 0;
+   if (title !== void 0) {
+     main.title = title;
+@@ -1525,7 +1525,7 @@ var SongParser = class _SongParser {
+     const listData = traverseList(item, "menu", "navigationEndpoint");
+     const title = columns[0];
+     const artist = columns.find(isArtist) || columns[3];
+-    const album = _nullishCoalesce(columns.find(isAlbum), () => ( null));
++    const album = _nullishCoalesce(columns.find(isAlbum), () => (null));
+     const duration = columns.find(isDuration);
+     return checkType_default(
+       {
+@@ -1817,17 +1817,17 @@ var ArtistParser = class {
+         ),
+         topAlbums: _nullishCoalesce(_optionalChain([traverseList, 'call', _43 => _43(data, "musicCarouselShelfRenderer"), 'optionalAccess', _44 => _44.at, 'call', _45 => _45(0), 'optionalAccess', _46 => _46.contents, 'access', _47 => _47.map, 'call', _48 => _48(
+           (item) => AlbumParser.parseArtistTopAlbum(item, artistBasic)
+-        )]), () => ( [])),
++        )]), () => ([])),
+         topSingles: _nullishCoalesce(_optionalChain([traverseList, 'call', _49 => _49(data, "musicCarouselShelfRenderer"), 'optionalAccess', _50 => _50.at, 'call', _51 => _51(1), 'optionalAccess', _52 => _52.contents, 'access', _53 => _53.map, 'call', _54 => _54(
+           (item) => AlbumParser.parseArtistTopAlbum(item, artistBasic)
+-        )]), () => ( [])),
++        )]), () => ([])),
+         topVideos: _nullishCoalesce(_optionalChain([traverseList, 'call', _55 => _55(data, "musicCarouselShelfRenderer"), 'optionalAccess', _56 => _56.at, 'call', _57 => _57(2), 'optionalAccess', _58 => _58.contents, 'access', _59 => _59.map, 'call', _60 => _60(
+           (item) => VideoParser.parseArtistTopVideo(item, artistBasic)
+-        )]), () => ( [])),
++        )]), () => ([])),
+         featuredOn: _nullishCoalesce(_optionalChain([traverseList, 'call', _61 => _61(data, "musicCarouselShelfRenderer"), 'optionalAccess', _62 => _62.at, 'call', _63 => _63(3), 'optionalAccess', _64 => _64.contents, 'access', _65 => _65.map, 'call', _66 => _66(
+           (item) => PlaylistParser.parseArtistFeaturedOn(item, artistBasic)
+-        )]), () => ( [])),
+-        similarArtists: _nullishCoalesce(_optionalChain([traverseList, 'call', _67 => _67(data, "musicCarouselShelfRenderer"), 'optionalAccess', _68 => _68.at, 'call', _69 => _69(4), 'optionalAccess', _70 => _70.contents, 'access', _71 => _71.map, 'call', _72 => _72((item) => this.parseSimilarArtists(item))]), () => ( []))
++        )]), () => ([])),
++        similarArtists: _nullishCoalesce(_optionalChain([traverseList, 'call', _67 => _67(data, "musicCarouselShelfRenderer"), 'optionalAccess', _68 => _68.at, 'call', _69 => _69(4), 'optionalAccess', _70 => _70.contents, 'access', _71 => _71.map, 'call', _72 => _72((item) => this.parseSimilarArtists(item))]), () => ([]))
+       },
+       ArtistFull
+     );
+@@ -1906,26 +1906,36 @@ var SearchParser = class {
+ };
+ 
+ // src/YTMusic.ts
+-_axios2.default.defaults.headers.common["Accept-Encoding"] = "gzip";
+ var YTMusic = class {
+ 
+-  
+-  
+   /**
+    * Creates an instance of YTMusic
+    * Make sure to call initialize()
+    */
+-  constructor() {
++  constructor() { }
++
++  /**
++   * Initializes the API
++   */
++  async initialize(options) {
+     this.cookiejar = new (0, _toughcookie.CookieJar)();
+     this.config = {};
+     this.client = _axios2.default.create({
+-      baseURL: "https://music.youtube.com/",
+-      headers: {
+-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36",
+-        "Accept-Language": "en-US,en;q=0.5"
+-      },
+-      withCredentials: true
++      baseURL: options?.baseURL
++        ? options.baseURL
++        : "https://music.youtube.com/",
++      headers: options?.headers
++        ? options.headers
++        : {
++          "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36",
++          "Accept-Language": "en-US,en;q=0.5"
++        },
++      withCredentials: false,
++      maxRedirects: 0
+     });
++    if (options?.baseURL)
++      this.client.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
++
+     this.client.interceptors.request.use((req) => {
+       if (req.baseURL) {
+         const cookieString = this.cookiejar.getCookieStringSync(req.baseURL);
+@@ -1935,6 +1945,7 @@ var YTMusic = class {
+       }
+       return req;
+     });
++
+     this.client.interceptors.response.use((res) => {
+       if (res.headers && res.config.baseURL) {
+         const cookieStrings = res.headers["set-cookie"] || [];
+@@ -1947,12 +1958,8 @@ var YTMusic = class {
+       }
+       return res;
+     });
+-  }
+-  /**
+-   * Initializes the API
+-   */
+-  async initialize(options) {
+-    const { cookies, GL, HL } = _nullishCoalesce(options, () => ( {}));
++
++    const { cookies, GL, HL } = _nullishCoalesce(options, () => ({}));
+     if (cookies) {
+       for (const cookieString of cookies.split("; ")) {
+         const cookie = _toughcookie.Cookie.parse(`${cookieString}`);
+@@ -1960,6 +1967,7 @@ var YTMusic = class {
+         this.cookiejar.setCookieSync(cookie, "https://www.youtube.com/");
+       }
+     }
++
+     const html = (await this.client.get("/")).data;
+     const setConfigs = html.match(/ytcfg\.set\(.*\)/) || [];
+     const configs = setConfigs.map((c) => c.slice(10, -1)).map((s) => {
+@@ -1975,6 +1983,16 @@ var YTMusic = class {
+         ...config
+       };
+     }
++
++    var initialData = [];
++    var initialDataSlice = html.slice(html.indexOf("initialData = [];"));
++    initialDataSlice = initialDataSlice.slice(0, initialDataSlice.indexOf(";ytcfg.set({'YTM"));
++    eval(initialDataSlice);
++    for (const index in initialData) {
++      initialData[index].data = JSON.parse(initialData[index].data);
++    }
++    this.initialData = initialData
++
+     if (!this.config) {
+       this.config = {};
+     }
+@@ -1995,7 +2013,11 @@ var YTMusic = class {
+     if (!this.config) {
+       throw new Error("API not initialized. Make sure to call the initialize() method first");
+     }
+-    const headers = {
++
++    const useAndroidMusicClient = endpoint == "player" || endpoint == "next";
++    const headers = useAndroidMusicClient ? {
++      ...this.client.defaults.headers,
++    } : {
+       ...this.client.defaults.headers,
+       "x-origin": this.client.defaults.baseURL,
+       "X-Goog-Visitor-Id": this.config.VISITOR_DATA || "",
+@@ -2007,6 +2029,67 @@ var YTMusic = class {
+       "X-YouTube-Utc-Offset": String(-(/* @__PURE__ */ new Date()).getTimezoneOffset()),
+       "X-YouTube-Time-Zone": new Intl.DateTimeFormat().resolvedOptions().timeZone
+     };
++
++    const requestBody = useAndroidMusicClient
++    ? {
++      context: {
++        client: {
++          clientName: "ANDROID_MUSIC",
++          clientVersion: "4.57",
++          gl: this.config.GL,
++          hl: this.config.HL,
++        }
++      },
++      user: {
++        enableSafetyMode: false
++      },
++      ...body
++    }
++
++    : {
++      context: {
++        capabilities: {},
++        client: {
++          clientName: this.config.INNERTUBE_CLIENT_NAME,
++          clientVersion: this.config.INNERTUBE_CLIENT_VERSION,
++          experimentIds: [],
++          experimentsToken: "",
++          gl: this.config.GL,
++          hl: this.config.HL,
++          locationInfo: {
++            locationPermissionAuthorizationStatus: "LOCATION_PERMISSION_AUTHORIZATION_STATUS_UNSUPPORTED"
++          },
++          musicAppInfo: {
++            musicActivityMasterSwitch: "MUSIC_ACTIVITY_MASTER_SWITCH_INDETERMINATE",
++            musicLocationMasterSwitch: "MUSIC_LOCATION_MASTER_SWITCH_INDETERMINATE",
++            pwaInstallabilityStatus: "PWA_INSTALLABILITY_STATUS_UNKNOWN"
++          },
++          utcOffsetMinutes: -(/* @__PURE__ */ new Date()).getTimezoneOffset()
++        },
++        request: {
++          internalExperimentFlags: [
++            {
++              key: "force_music_enable_outertube_tastebuilder_browse",
++              value: "true"
++            },
++            {
++              key: "force_music_enable_outertube_playlist_detail_browse",
++              value: "true"
++            },
++            {
++              key: "force_music_enable_outertube_search_suggestions",
++              value: "true"
++            }
++          ],
++          sessionIndex: {}
++        },
++        user: {
++          enableSafetyMode: false
++        }
++      },
++      ...body
++    };
++
+     const searchParams = new URLSearchParams({
+       ...query,
+       alt: "json",
+@@ -2014,49 +2097,7 @@ var YTMusic = class {
+     });
+     const res = await this.client.post(
+       `youtubei/${this.config.INNERTUBE_API_VERSION}/${endpoint}?${searchParams.toString()}`,
+-      {
+-        context: {
+-          capabilities: {},
+-          client: {
+-            clientName: this.config.INNERTUBE_CLIENT_NAME,
+-            clientVersion: this.config.INNERTUBE_CLIENT_VERSION,
+-            experimentIds: [],
+-            experimentsToken: "",
+-            gl: this.config.GL,
+-            hl: this.config.HL,
+-            locationInfo: {
+-              locationPermissionAuthorizationStatus: "LOCATION_PERMISSION_AUTHORIZATION_STATUS_UNSUPPORTED"
+-            },
+-            musicAppInfo: {
+-              musicActivityMasterSwitch: "MUSIC_ACTIVITY_MASTER_SWITCH_INDETERMINATE",
+-              musicLocationMasterSwitch: "MUSIC_LOCATION_MASTER_SWITCH_INDETERMINATE",
+-              pwaInstallabilityStatus: "PWA_INSTALLABILITY_STATUS_UNKNOWN"
+-            },
+-            utcOffsetMinutes: -(/* @__PURE__ */ new Date()).getTimezoneOffset()
+-          },
+-          request: {
+-            internalExperimentFlags: [
+-              {
+-                key: "force_music_enable_outertube_tastebuilder_browse",
+-                value: "true"
+-              },
+-              {
+-                key: "force_music_enable_outertube_playlist_detail_browse",
+-                value: "true"
+-              },
+-              {
+-                key: "force_music_enable_outertube_search_suggestions",
+-                value: "true"
+-              }
+-            ],
+-            sessionIndex: {}
+-          },
+-          user: {
+-            enableSafetyMode: false
+-          }
+-        },
+-        ...body
+-      },
++      requestBody,
+       {
+         responseType: "json",
+         headers
+@@ -2167,10 +2208,8 @@ var YTMusic = class {
+    * @returns Song Data
+    */
+   async getSong(videoId) {
+-    if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId");
+     const data = await this.constructRequest("player", { videoId });
+     const song = SongParser.parse(data);
+-    if (song.videoId !== videoId) throw new Error("Invalid videoId");
+     return song;
+   }
+   /**
+@@ -2330,6 +2369,11 @@ var YTMusic = class {
+     }
+     return sections.map(Parser.parseHomeSection);
+   }
++
++  getInitialHomeSections() {
++    return this.initialData[1].data.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents.map(Parser.parseHomeSection);
++  }
++
+   /**
+    * Get content for next song.
+    *
+@@ -2341,12 +2385,12 @@ var YTMusic = class {
+    */
+   async getNext(videoId, listId, params) {
+     const data = await this.constructRequest("next", {
+-      enablePersistentPlaylistPanel: true,
+-      isAudioOnly: true,
+       params,
+-      playlistId: listId,
+       tunerSettingValue: "AUTOMIX_SETTING_NORMAL",
+-      videoId
++      videoId: videoId,
++      playlistId: listId,
++      enablePersistentPlaylistPanel: true,
++      isAudioOnly: true,
+     });
+     const contents = traverse(traverseList(data, "tabs", "tabRenderer")[0], "contents");
+     return contents.map(NextParser.parse);
+diff --git a/node_modules/ytmusic-api/dist/test.ts b/node_modules/ytmusic-api/dist/test.ts
+new file mode 100644
+index 0000000..bb074da
+--- /dev/null
++++ b/node_modules/ytmusic-api/dist/test.ts
+@@ -0,0 +1,17 @@
++import YTMusic from "./index";
++
++//@ts-ignore only here for testing
++const window = {
++  location: {
++    host: "localhost:8081",
++    hostname: "localhost",
++  }
++}
++
++const ytmusic = new YTMusic();
++await ytmusic.initialize({
++  baseURL: "http://" + window.location.host + "/proxy",
++});
++
++const song = await ytmusic.getNext("aHE-n-2IDzY", undefined);
++console.log(song);
+\ No newline at end of file

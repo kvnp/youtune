@@ -10,6 +10,7 @@ import Playlist from '../../model/music/playlist';
 var queueAddCounter = 0;
 export default class Music {
     static playbackState: State = State.None;
+    static handlingPlayback: boolean = false;
     static set state(value) {
         this.playbackState = value;
         this.#emitter.emit(this.EVENT_STATE_UPDATE, this.state);
@@ -76,7 +77,9 @@ export default class Music {
 
     static get metadata() {
         if (Music.list.length == 0)
-            return Music.transition ? Music.transition : new Track();
+            return Music.transition
+                ? Music.transition
+                : Track.new();
         else
             return Music.list[Music.index];
     }
@@ -215,9 +218,10 @@ export default class Music {
         Music.#queue.enqueue(() => {
             return new Promise(async(resolve, reject) => {
                 let track = Music.list[index];
-                let content = await Music.getStream({videoId: track.videoId})
-                track.url = content.url;
-                track.contentType = content.mimeType;
+                track = {
+                    ...track,
+                    ...(await API.getSong(track.videoId))
+                }
                 resolve(track);
             });
         });
@@ -297,29 +301,29 @@ export default class Music {
 
             Cast.initialize();
             Cast.addListener(Cast.EVENT_CAST, e => {
-                if (e.castState == "CONNECTED") {
-                    if (!Music.isStreaming) {
-                        Music.isStreaming = true;
-                        TrackPlayer.reset();
-                        clearInterval(Music.#positionInterval);
+                // if (e.castState == "CONNECTED") {
+                //     if (!Music.isStreaming) {
+                //         Music.isStreaming = true;
+                //         TrackPlayer.reset();
+                //         clearInterval(Music.#positionInterval);
 
-                        Music.#positionListener = Cast.addListener(
-                            Cast.EVENT_POSITION,
-                            (pos: number) => Music.position = pos
-                        );
-                    }
-                } else {
-                    if (!Music.isStreaming)
-                        return;
+                //         Music.#positionListener = Cast.addListener(
+                //             Cast.EVENT_POSITION,
+                //             (pos: number) => Music.position = pos
+                //         );
+                //     }
+                // } else {
+                //     if (!Music.isStreaming)
+                //         return;
 
-                    Music.isStreaming = false;
-                    Music.#positionListener.remove();
-                    if (Music.list.length > 0)
-                        Music.startPlaylist({
-                            list: Music.list,
-                            index: Music.index
-                        }, Music.position);
-                }
+                //     Music.isStreaming = false;
+                //     Music.#positionListener.remove();
+                //     if (Music.list.length > 0)
+                //         Music.startPlaylist({
+                //             list: Music.list,
+                //             index: Music.index
+                //         }, Music.position);
+                // }
             });
 
             Cast.addListener(Cast.EVENT_PLAYERSTATE, e => {
@@ -374,7 +378,7 @@ export default class Music {
             Music.repeatMode = RepeatMode.Queue;
         else if (Music.repeatMode == RepeatMode.Queue)
             Music.repeatMode = RepeatMode.Track;
-        else if (Music.repeatMode == RepeatMode.Track)
+        else // if (Music.repeatMode == RepeatMode.Track)
             Music.repeatMode = RepeatMode.Off;
         
         TrackPlayer.setRepeatMode(Music.repeatMode);
@@ -427,21 +431,19 @@ export default class Music {
     static skipNext() {Music.skipTo(Music.index + 1)}
     static skipPrevious() {Music.skipTo(Music.index - 1)}
 
-    static getStream({videoId}: {videoId: string}) {
-        if (Downloads.isTrackDownloaded(videoId))
-            return Downloads.getStream(videoId);
-        else
-            return API.getAudioStream({videoId});
-    }
-
-    static getMetadata({videoId}: {videoId: string}): Track {
-        if (Downloads.isTrackCached(videoId))
-            return Downloads.getTrack(videoId);
-        else
-            return API.getAudioInfo({videoId});
-    }
+    // static async getStream({videoId}: {videoId: string}): Promise<string | null> {
+    //     if (Downloads.isTrackDownloaded(videoId))
+    //         //return Downloads.getStream(videoId);
+    //         return null;
+    //     else
+    //         return await API.getAudioUrl(videoId);
+    // }
 
     static async handlePlayback(track: Track, forced: boolean) {
+        if (Music.handlingPlayback)
+            return;
+
+        Music.handlingPlayback = true;
         Music.transition = track;
         const {videoId, playlistId } = track;
         let queue = Music.list;
@@ -474,51 +476,62 @@ export default class Music {
             .then(localPlaylist => {
                 if (localPlaylist != null)
                     Music.startPlaylist(localPlaylist, 0);
-                else
-                    //TODO handle null
-                    return;
+                
+                Music.handlingPlayback = false;
             })
-            .catch(_ => console.log(_));
-        else API.getNextSongs({videoId, playlistId})
-            .then(resultPlaylist => {
+            .catch(e => {
+                console.log(e);
+                Music.handlingPlayback = false;
+            });
+        else API.waitForInitialization().then(() => {
+            API.getNextSongs(videoId, playlistId!)
+            .then(tracks => {
+                let resultPlaylist = new Playlist();
+                resultPlaylist.list = tracks;
+                resultPlaylist.index = 0;
+
                 Music.startPlaylist(resultPlaylist, 0);
+                Music.handlingPlayback = false;
             })
-            .catch(_ => console.log(_));
+            .catch(e => {
+                console.error(e);
+                Music.handlingPlayback = false;
+            });
+        });
     }
 
     static async startPlaylist(playlist: Playlist, position: number) {
         Music.trackUrlLoaded = Array(playlist.list.length).fill(false);
         Music.list = playlist.list;
+        console.log(playlist.list);
 
         for (let i = 0; i < playlist.list.length; i++) {
             if (i == playlist.index)
                 Music.index = i;
 
             if (i == playlist.index || i == playlist.index + 1) {
-                if (Downloads.isTrackDownloaded(playlist.list[i].videoId) || !playlist.list[i].duration) {
-                    playlist.list[i] = await Music.getMetadata({videoId: playlist.list[i].videoId});
-                    Music.list[i] = playlist.list[i];
-                    if (playlist.list[i].videoId) {
-                        playlist.list[i].videoId = playlist.list[i].videoId;
-                    } else {
-                        Music.list[i] = playlist.list[i];
-                        Music.index = i;
-                    }
+                if (!Downloads.isTrackDownloaded(Music.list[i].videoId)) {
+                    console.log("hey");
+                    Music.list[i] = {
+                        ...Music.list[i],
+                        ...(await API.getSong(Music.list[i].videoId))
+                    };
                 }
-
-                let content = await Music.getStream({videoId: playlist.list[i].videoId });
-                playlist.list[i].url = content.url;
-                playlist.list[i].contentType = content.mimeType;
+                
                 Music.trackUrlLoaded[i] = true;
             }
 
-            if (i == playlist.index + 1)
+            if (i == Music.index + 1)
                 break;
         }
 
         if (!Music.isStreaming) {
-            await TrackPlayer.add(playlist.list);
-            await TrackPlayer.skip(playlist.index);
+            if (Music.list.length <= 0) {
+                console.error("No tracks to play");
+            }
+
+            await TrackPlayer.add(Music.list);
+            await TrackPlayer.skip(Music.index);
             if (position)
                 await TrackPlayer.seekTo(position);
 

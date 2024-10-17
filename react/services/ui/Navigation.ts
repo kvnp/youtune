@@ -28,46 +28,26 @@ export default class Navigation {
         const { browseId, playlistId, videoId } = media;
     
         if (videoId != undefined && playlistId != undefined) {
-            Music.handlePlayback(
-                new Track(
-                    videoId, null, playlistId, media.title,
-                    media.subtitle?.includes("•")
-                        ? media.subtitle?.split("•")[1].trim()
-                        : media.subtitle,
-                    media.thumbnail
-                ),
-                forced
-            );
-    
+            const track = Track.new();
+            track.id = videoId;
+            track.videoId = videoId;
+            track.playlistId = playlistId;
+            Music.handlePlayback(track, forced);
             return this.#navigate("Music", {v: videoId, list: playlistId}, navigation);
         } else if (videoId != undefined && browseId != undefined) {
             if (browseId.slice(0, 2) == "VL") {
-                Music.handlePlayback(
-                    new Track(
-                        videoId, null, browseId.slice(2), media.title,
-                        media.subtitle.includes("•")
-                            ? media.subtitle.split("•")[1].trim()
-                            : media.subtitle,
-                        media.thumbnail
-                    ),
-                    forced
-                );
-    
+                const track = Track.new();
+                track.id = videoId;
+                track.videoId = videoId;
+                track.playlistId = browseId.slice(2);
+                Music.handlePlayback(track, forced);
                 return this.#navigate("Music", {v: videoId, list: browseId.slice(2)}, navigation);
             }
-    
         } else if (videoId != undefined) {
-            Music.handlePlayback(
-                new Track(
-                    videoId, null, null, media.title,
-                    media.subtitle.includes("•")
-                        ? media.subtitle.split("•")[1].trim()
-                        : media.subtitle,
-                    media.thumbnail
-                ),
-                forced
-            );
-    
+            const track = Track.new();
+            track.id = videoId;
+            track.videoId = videoId;
+            Music.handlePlayback(track, forced);
             return this.#navigate("Music", {v: videoId}, navigation);
         }
     

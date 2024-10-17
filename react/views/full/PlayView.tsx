@@ -22,6 +22,7 @@ import { showMoreModal } from "../../components/modals/MoreModal";
 import ScrollingText from "../../components/shared/ScrollingText";
 import CastButton from "../../components/player/CastButton";
 import Cast from "../../services/music/Cast";
+import Track from "@/react/model/music/track";
 
 const PlayView = ({route, navigation}) => {
     const { height, width } = useWindowDimensions();
@@ -60,10 +61,10 @@ const PlayView = ({route, navigation}) => {
         updateParams();
         if (!title) {
             setState(State.Buffering);
-            Music.handlePlayback({
-                videoId: route.params.v,
-                playlistId: route.params.list
-            });
+            let track = Track.new();
+            track.videoId = route.params.v;
+            track.playlistId = route.params.list;
+            Music.handlePlayback(track, false);
         }
 
         const castListener = Cast.addListener(

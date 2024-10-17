@@ -424,7 +424,6 @@ export default function MoreModal({navigation}) {
                             }, {
                                 dialogTitle: title
                             }).then(event => {
-                                console.log(event);
                                 setContent({...content, visible: false});
                             });
 

@@ -114,7 +114,17 @@ export default function SwipePlaylist({playlist, track, backgroundColor, textCol
                             }
 
                             <div style={{height: 50, width: 50, marginRight: 10, backgroundColor: "gray"}}>
-                                <img onLoad={e => e.target.style.opacity = 1} src={item.artwork} loading="lazy" style={{width: "100%", height: "auto", opacity: 0, transition: "opacity .4s ease-in"}}></img>
+                                <img
+                                    onLoad={e => e.target.style.opacity = 1}
+                                    src={item.artwork}
+                                    loading="lazy"
+                                    style={{
+                                        width: "100%",
+                                        height: "auto",
+                                        opacity: 0,
+                                        transition: "opacity .4s ease-in"
+                                    }}
+                                />
                             </div>
                             
 

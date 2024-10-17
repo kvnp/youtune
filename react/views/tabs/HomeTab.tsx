@@ -28,7 +28,7 @@ export default function HomeTab({navigation}: {navigation: any}) {
     );
 
     const startRefresh = () => {
-        API.initialize()
+        API.waitForInitialization()
             .then(() => {
                 setSections(API.YTMusic.getInitialHomeSections());
                 setLoading(false);

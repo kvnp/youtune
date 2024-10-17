@@ -106,15 +106,15 @@ export default class Settings {
     static setHeaderState(state) {
         if (this.Values.headerState != state) {
             if (IO.isBlob(state.source.uri)) {
-                this.#storeSetting("headerState");
+                // this.#storeSetting("headerState");
 
             } else {
-                API.getBlob({url: state.source.uri})
-                    .then(result => {
-                        state.source.uri = result;
-                        this.Values.headerState = state;
-                        this.#storeSetting("headerState");
-                    });
+                // API.getBlob({url: state.source.uri})
+                //     .then(result => {
+                //         state.source.uri = result;
+                //         this.Values.headerState = state;
+                //         this.#storeSetting("headerState");
+                //     });
             }
         }   
     }
