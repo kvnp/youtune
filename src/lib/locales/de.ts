@@ -1,0 +1,50 @@
+/**
+ * German translation
+ */
+
+const German = {
+    login: 'Einloggen',
+    signup: 'Registrieren',
+    profile: 'Profil',
+    options: 'Optionen',
+    search: 'Suche',
+    stackNav: 'Stack-Navigation',
+    drawerNav: 'Drawer-Navigation',
+    appearance: 'Aussehen',
+    language: 'Sprache',
+    changeLanguage: "Sprache ändern",
+    system: 'System',
+    mode: 'Modus',
+    changeMode: 'Zwisch Light und Dark Mode wechseln',
+    lightMode: 'Light',
+    darkMode: 'Dark',
+    color: 'Farbe',
+    changeColor: 'Theme Color wechseln',
+    changeScreenCode:
+        'Verändere den Text, speichere die Datei, und deine App wird automatisch aktualisiert',
+    goHome: 'Zur Startseite',
+    openScreenCode: 'Öffne den Code für diese Seite',
+    save: 'Speichern',
+    screen404: "Diese Seite existiert nicht",
+    titleHome: 'Startseite',
+    titleModal: 'Modal',
+    titleNotFound: 'Nicht gefunden',
+    titleSettings: 'Einstellungen',
+    restartApp: 'App neu starten um Änderungen zu übernehmen',
+    notAvailable: 'Expo SecureStore ist nicht verfügbar für Web',
+    adaptive: 'adaptiv',
+    default: 'default',
+    orange: 'orange',
+    red: 'rot',
+    violet: 'violett',
+    indigo: 'indigo',
+    blue: 'blau',
+    teal: 'teal',
+    cyan: 'cyan',
+    green: 'grün',
+    lime: 'lime',
+    olive: 'olive',
+    brown: 'braun',
+}
+
+export default German

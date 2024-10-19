@@ -1,38 +1,47 @@
 {
-  "expo": {
-    "name": "youtune",
-    "slug": "youtune",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "eu.kvnp.youtune"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "single",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [],
-    "experiments": {},
-    "extra": {
-      "eas": {
-        "projectId": "89a156ec-cc19-450d-b22b-8458c55de815"
-      }
+    "expo": {
+        "name": "youtune",
+        "slug": "youtune",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/images/icon.png",
+        "scheme": "myapp",
+        "userInterfaceStyle": "automatic",
+        "splash": {
+            "image": "./assets/images/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
+        "ios": {
+            "supportsTablet": true
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/adaptive-icon.png",
+                "backgroundColor": "#ffffff"
+            },
+            "package": "eu.kvnp.youtune"
+        },
+        "web": {
+            "bundler": "metro",
+            "favicon": "./assets/images/favicon.png"
+        },
+        "plugins": [
+            "expo-router",
+            "expo-localization",
+            "expo-secure-store"
+        ],
+        "extra": {
+            "eas": {
+                "projectId": "89a156ec-cc19-450d-b22b-8458c55de815"
+            },
+            "supportsRTL": true
+        },
+        "experiments": {
+            "typedRoutes": true
+        }
     }
-  }
 }
