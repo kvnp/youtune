@@ -8,6 +8,8 @@ import { SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
 import { Provider } from 'react-redux'
 import { store } from '@/src/lib/redux'
+import Locales from '@/src/lib/locales'
+import { StackHeader } from '@/src/lib/ui'
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -51,8 +53,20 @@ const RootLayoutNav = () => {
     return <Stack
         screenOptions={{
             animation: 'slide_from_bottom',
+            header: (props) => (
+                <StackHeader
+                    navProps={props}
+                    children={undefined}
+                />
+            ),
         }}
     >
+        <Stack.Screen
+            name="search"
+            options={{
+                title: Locales.t('search')
+            }}
+        />
         <Stack.Screen
             name="watch"
             options={{

@@ -87,12 +87,6 @@ const RootLayoutNav = () => {
             }}
         >
             <Stack.Screen
-                name="search"
-                options={{
-                    title: Locales.t('search')
-                }}
-            />
-            <Stack.Screen
                 name="(modals)"
                 options={{
                     headerShown: false

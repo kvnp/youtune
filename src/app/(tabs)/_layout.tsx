@@ -7,18 +7,43 @@ import Locales from '@/src/lib/locales'
 import { TabBar, TabsHeader } from '@/src/lib/ui'
 import UI from '@/src/legacy/services/ui/UI'
 import Music from '@/src/legacy/services/music/Music'
+import MiniPlayer from '@/src/legacy/components/player/MiniPlayer'
+import { State } from 'react-native-track-player'
+
+const getHeight = (state: State) => [State.Stopped, State.None].includes(state)
+    ? 0
+    : 50;
 
 const TabLayout = () => {
+    const [marginBottom, setMarginBottom] = useState(getHeight(Music.state));
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         UI.initialize();
         Music.initialize();
+
+        const stateListener = Music.addListener(
+            Music.EVENT_STATE_UPDATE,
+            state => setMarginBottom(getHeight(state))
+        );
+
+        return () => stateListener.remove();
     }, []);
 
     return (
         <Tabs
-            tabBar={(props) => <TabBar {...props} />}
+            tabBar={(props) => <>
+                <MiniPlayer
+                    containerStyle={{
+                        position: "absolute",
+                        bottom: 48,
+                        width: "100%",
+                        height: marginBottom
+                    }}
+                    style={{maxWidth: 800}}
+                />
+                <TabBar {...props} />
+            </>}
             screenOptions={{
                 tabBarHideOnKeyboard: true,
                 header: (props) => <TabsHeader

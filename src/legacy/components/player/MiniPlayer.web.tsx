@@ -12,7 +12,7 @@ import ScrollingText from "../shared/ScrollingText";
 import { showStreamModal } from "../modals/StreamModal";
 
 var firstY;
-export default function MiniPlayer({style, containerStyle, moveMargin, resetMargin}) {
+export default function MiniPlayer({style, containerStyle}) {
     const navigation = useNavigation();
     const { colors } = useTheme();
 
@@ -39,8 +39,8 @@ export default function MiniPlayer({style, containerStyle, moveMargin, resetMarg
 
         let newHeight = firstY - y + currentHeight.current;
         let newHeightPx = newHeight + "px";
-        if (newHeight >= 0 && newHeight <= 50)
-            moveMargin(newHeightPx);
+        // if (newHeight >= 0 && newHeight <= 50)
+        //     moveMargin(newHeightPx);
 
         container.current.style.height = newHeightPx;
     };
@@ -56,11 +56,13 @@ export default function MiniPlayer({style, containerStyle, moveMargin, resetMarg
             navigation.navigate("Music");
 
         container.current.style.height = currentHeight.current + "px";
-        resetMargin();
+        // resetMargin();
     };
 
     useEffect(() => {
-        currentHeight.current = Number(containerStyle.height.slice(0, -2));
+        currentHeight.current = Number.isInteger(containerStyle.height)
+            ? containerStyle.height
+            : Number(containerStyle.height.slice(0, -2));
     }, [containerStyle]);
 
     const enableMouse = () => {

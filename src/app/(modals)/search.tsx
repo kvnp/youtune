@@ -13,9 +13,9 @@ import {
 } from 'expo-router';
 
 import { styles } from '@/src/lib/ui'
-import API from '../legacy/services/api/API';
-import {resultHomeStyle} from '../legacy/styles/Home';
-import Entry from '../legacy/components/shared/Entry';
+import API from '../../legacy/services/api/API';
+import {resultHomeStyle} from '../../legacy/styles/Home';
+import Entry from '../../legacy/components/shared/Entry';
 
 const Search = () => {
     const { q } = useLocalSearchParams<{ q?: string }>();
