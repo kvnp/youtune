@@ -43,12 +43,8 @@ export default function HomeTab({navigation}: {navigation: any}) {
 
     return <Surface style={styles.screen}>
         <FlatList
-            style={{width: "100%", height: "100%"}}
-            contentContainerStyle={{
-                justifyContent: "center",
-                height: "100%",
-            }}
-
+            style={{width: "100%"}}
+            contentContainerStyle={{justifyContent: "center"}}
             ListEmptyComponent={
                 loading
                 ? <Surface
