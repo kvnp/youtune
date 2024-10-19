@@ -63,16 +63,16 @@ const RootLayoutNav = () => {
         if (language === 'auto')
             Locales.locale = Localization.getLocales()[0].languageCode ?? 'en'
         else
-            Locales.locale = language
+            Locales.locale = language!
     }, [language])
 
     return <PaperProvider
         theme={
             Themes[
-                theme === 'auto'
+                theme! === 'auto'
                     ? (colorScheme ?? 'dark')
-                    : theme
-            ][color]
+                    : theme!
+            ][color!]
         }
     >
         <Stack

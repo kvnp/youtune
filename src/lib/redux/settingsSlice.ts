@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
-import { createSlice } from '@reduxjs/toolkit';
+import { Platform, Settings } from 'react-native';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Setting } from '../types';
 import { RootState } from './store';
@@ -9,6 +9,10 @@ let initialState: Setting = {
     theme: 'auto',
     color: 'default',
     language: 'auto',
+    transmitDeviceLanguage: true,
+    proxy: false,
+    safetyMode: false,
+    visualizer: false,
 };
 
 const storage = Platform.OS !== 'web' ? SecureStore : localStorage;
@@ -24,50 +28,21 @@ const settingsSlice = createSlice({
     name: 'settings',
     initialState,
     reducers: {
-        setTheme: (state, action) => {
-            state.theme = action.payload;
+        setSettings: (state, action: PayloadAction<Setting>) => {
+            for (const key in action.payload)
+                if (key in state)
+                    // @ts-ignore
+                    state[key] = action.payload[key];
+                
 
             storage.setItem('settings', JSON.stringify({
-                theme: action.payload,
-                color: state.color,
-                language: state.language,
+                ...state,
+                ...action.payload
             }));
         },
-
-        setColor: (state, action) => {
-            state.color = action.payload;
-
-            storage.setItem('settings', JSON.stringify({
-                theme: state.theme,
-                color: action.payload,
-                language: state.language,
-            }));
-        },
-
-        setLanguage: (state, action) => {
-            state.language = action.payload;
-
-            storage.setItem('settings', JSON.stringify({
-                theme: state.theme,
-                color: state.color,
-                Language: action.payload,
-            }));
-        },
-
-        setSettings: (state, action) => {
-            state.theme = action.payload.theme;
-            state.color = action.payload.color;
-            state.language = action.payload.language;
-
-            storage.setItem('settings', JSON.stringify({
-                theme: action.payload.theme,
-                color: action.payload.color,
-                language: action.payload.language,
-            }));
-        }
     },
 });
 
 export const selectSettings = (state: RootState) => state.settings;
-export const { setTheme, setColor, setLanguage, setSettings } = settingsSlice.actions;
+export const { setSettings } = settingsSlice.actions;
 export default settingsSlice.reducer;

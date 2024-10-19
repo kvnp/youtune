@@ -118,7 +118,6 @@ export default function HomeTab({navigation}: {navigation: any}) {
                 <Section
                     section={item}
                     type="horizontal"
-                    navigation={navigation}
                 />
             }
 

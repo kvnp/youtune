@@ -10,6 +10,7 @@ import {
     IconButton,
     Snackbar,
     Icon,
+    Switch,
 } from 'react-native-paper'
 
 import Locales from '@/src/lib/locales'
@@ -18,9 +19,6 @@ import { Colors, ScreenInfo, styles } from '@/src/lib/ui'
 import { Languages } from '@/src/lib/utils'
 import {
     selectSettings,
-    setTheme,
-    setColor,
-    setLanguage,
     useAppDispatch,
     useAppSelector,
     setSettings
@@ -31,10 +29,10 @@ const Settings = () => {
     const settings = useAppSelector(selectSettings)
     const dispatch = useAppDispatch()
 
-    const [message, setMessage] = useState({
-        visible: false,
-        content: ''
-    })
+    // const [message, setMessage] = useState({
+    //     visible: false,
+    //     content: ''
+    // })
 
     const [display, setDisplay] = useState({
         color: false,
@@ -44,7 +42,9 @@ const Settings = () => {
 
     const themeColors =
         Colors[
-        settings.theme === 'auto' ? (colorScheme ?? 'light') : settings.theme
+            settings.theme! === 'auto'
+                ? (colorScheme ?? 'light')
+                : settings.theme!
         ]
 
     return (
@@ -82,7 +82,7 @@ const Settings = () => {
                                             settings.language === 'auto' ? 'check' : undefined
                                         }
                                         onPress={() => {
-                                            dispatch(setLanguage('auto'))
+                                            dispatch(setSettings({language: 'auto'}))
                                             setDisplay({ ...display, language: false })
                                         }}
                                     />
@@ -94,8 +94,8 @@ const Settings = () => {
                                                 settings.language === lang[0] ? 'check' : undefined
                                             }
                                             onPress={() => {
-                                                dispatch(setLanguage(lang[0] as Language))
-                                                setDisplay({ ...display, language: false })
+                                                dispatch(setSettings({language: lang[0] as Language}));
+                                                setDisplay({ ...display, language: false });
                                             }}
                                         />
                                     ))}
@@ -136,7 +136,7 @@ const Settings = () => {
                                             settings.theme === 'auto' ? 'check' : undefined
                                         }
                                         onPress={() => {
-                                            dispatch(setTheme('auto'))
+                                            dispatch(setSettings({ theme: 'auto' }))
                                             setDisplay({ ...display, theme: false })
                                         }}
                                     />
@@ -147,7 +147,7 @@ const Settings = () => {
                                             settings.theme === 'light' ? 'check' : undefined
                                         }
                                         onPress={() => {
-                                            dispatch(setTheme('light'))
+                                            dispatch(setSettings({theme: 'light'}))
                                             setDisplay({ ...display, theme: false })
                                         }}
                                     />
@@ -158,7 +158,7 @@ const Settings = () => {
                                             settings.theme === 'dark' ? 'check' : undefined
                                         }
                                         onPress={() => {
-                                            dispatch(setTheme('dark'))
+                                            dispatch(setSettings({theme: 'dark'}))
                                             setDisplay({ ...display, theme: false })
                                         }}
                                     />
@@ -174,10 +174,10 @@ const Settings = () => {
                                     icon="palette-swatch-variant"
                                     color={
                                         Colors[
-                                            settings.theme === 'auto'
+                                            settings.theme! === 'auto'
                                                 ? (colorScheme ?? 'light')
-                                                : settings.theme
-                                        ][settings.color]?.primary
+                                                : settings.theme!
+                                        ][settings.color!]?.primary
                                     }
                                 />
                             )}
@@ -230,8 +230,9 @@ const Settings = () => {
                                                 key={color}
                                                 title={Locales.t(color)}
                                                 onPress={() => {
-                                                    dispatch(setColor(color as Color))
-                                                    setDisplay({ ...display, color: false })
+                                                    // @ts-ignore
+                                                    dispatch(setSettings({color}));
+                                                    setDisplay({ ...display, color: false });
                                                 }}
                                             />
                                         </Surface>
@@ -239,18 +240,118 @@ const Settings = () => {
                                 </Menu>
                             )}
                         />
+                        <List.Item
+                            title="Audio visualizer"
+                            description="Visualize audio in the watch screen"
+                            left={(props) => (
+                                <List.Icon
+                                    {...props}
+                                    icon="animation"
+                                    color={
+                                        Colors[
+                                            settings.theme! === 'auto'
+                                                ? (colorScheme ?? 'light')
+                                                : settings.theme!
+                                        ][settings.color!]?.primary
+                                    }
+                                />
+                            )}
+                            right={(props) => (
+                                <Switch
+                                    value={settings.visualizer}
+                                    onValueChange={value => { 
+                                        dispatch(setSettings({ visualizer: value }));
+                                    }}
+                                />
+                            )}
+                        />
+                    </List.Accordion>
+
+                    <List.Accordion
+                        id="2"
+                        title="Communication"
+                        left={(props) => <List.Icon {...props} icon="web" />}
+                    >
+                        <List.Item
+                            title="Transmit Device Language"
+                            description="Transmit device language when sending requests"
+                            left={(props) => (
+                                <List.Icon
+                                    {...props}
+                                    icon="earth"
+                                    color={
+                                        Colors[
+                                            settings.theme! === 'auto'
+                                                ? (colorScheme ?? 'light')
+                                                : settings.theme!
+                                        ][settings.color!]?.primary
+                                    }
+                                />
+                            )}
+                            right={_ => (
+                                <Switch
+                                    value={settings.visualizer}
+                                    onValueChange={value => { 
+                                        dispatch(setSettings({ transmitDeviceLanguage: value }));
+                                    }}
+                                />
+                            )}
+                        />
+                        <List.Item
+                            title="Proxy"
+                            description="Use a proxy server to send requests"
+                            left={(props) => (
+                                <List.Icon
+                                    {...props}
+                                    icon="earth"
+                                    color={
+                                        Colors[
+                                            settings.theme! === 'auto'
+                                                ? (colorScheme ?? 'light')
+                                                : settings.theme!
+                                        ][settings.color!]?.primary
+                                    }
+                                />
+                            )}
+                            right={_ => (
+                                <Switch
+                                    value={settings.visualizer}
+                                    onValueChange={value => {
+                                        dispatch(setSettings({ proxy: value }));
+                                    }}
+                                />
+                            )}
+                        />
+                        <List.Item
+                            title="Satefy Mode"
+                            description="Enable safety mode to filter explicit content"
+                            left={(props) => (
+                                <List.Icon
+                                    {...props}
+                                    icon="seatbelt"
+                                    color={
+                                        Colors[
+                                            settings.theme! === 'auto'
+                                                ? (colorScheme ?? 'light')
+                                                : settings.theme!
+                                        ][settings.color!]?.primary
+                                    }
+                                />
+                            )}
+                            right={_ => (
+                                <Switch
+                                    value={settings.visualizer}
+                                    onValueChange={value => {
+                                        dispatch(setSettings({ safetyMode: value }));
+                                    }}
+                                />
+                            )}
+                        />
                     </List.Accordion>
                 </List.AccordionGroup>
             </Surface>
 
-            <Surface elevation={0} style={styles.screen}>
-                <ScreenInfo
-                    title={Locales.t('titleSettings')}
-                    path="app/(tabs)/settings.tsx"
-                />
-            </Surface>
-
-            <Button
+            {/* <Button
                 mode="contained"
                 style={{ margin: 16 }}
                 onPress={() => {
@@ -270,7 +371,7 @@ const Settings = () => {
                 onIconPress={() => setMessage({ ...message, visible: false })}
             >
                 {message.content}
-            </Snackbar>
+            </Snackbar> */}
         </Surface>
     )
 }

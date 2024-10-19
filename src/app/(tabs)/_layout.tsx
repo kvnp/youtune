@@ -74,9 +74,9 @@ const TabLayout = () => {
                 }}
             />
             <Tabs.Screen
-                name="profile"
+                name="library"
                 options={{
-                    title: Locales.t('profile'),
+                    title: "Library",
                     headerRight: () => (
                         <>
                             <Tooltip title={Locales.t('search')}>
@@ -98,8 +98,8 @@ const TabLayout = () => {
                             {...props}
                             size={24}
                             name={props.focused
-                                ? 'account'
-                                : 'account-outline'
+                                ? 'music-box-multiple'
+                                : 'music-box-multiple-outline'
                             }
                         />
                     ),
@@ -109,14 +109,6 @@ const TabLayout = () => {
                 name="settings"
                 options={{
                     title: Locales.t('titleSettings'),
-                    headerRight: () => (
-                        <Tooltip title={Locales.t('drawerNav')}>
-                            <Appbar.Action
-                                icon="gesture-swipe"
-                                onPress={() => router.push('/drawer')}
-                            />
-                        </Tooltip>
-                    ),
                     tabBarIcon: (props) => (
                         <MaterialCommunityIcons
                             {...props}
