@@ -86,18 +86,6 @@ export default function PlayView() {
         drawImage();
     }
 
-    const handlePlayback = () => {
-        if (!title) {
-            console.log(params);
-            setState(State.Buffering);
-            let track = Track.new();
-            track.videoId = params.v!;
-            track.playlistId = params.list!;
-            console.log("handlePlayback PlayView");
-            Music.handlePlayback(track, false);
-        }
-    }
-
     const goBack = () => {
         container.current!.style.transition = heightTransition;
         container.current!.style.height = "0px";
@@ -253,16 +241,24 @@ export default function PlayView() {
         };
     }, []);
 
-    useEffect(() => {
-        if (videoId != null) {
-            document.title = title;
-            router.setParams({ v: videoId, list: playlistId });
-            Downloads.isTrackLiked(videoId).then(like => setLiked(like));
-        }
-    }, [videoId, playlistId]);
+    // useEffect(() => {
+    //     if (videoId != null) {
+    //         document.title = title;
+    //         router.setParams({ v: videoId, list: playlistId });
+    //         Downloads.isTrackLiked(videoId).then(like => setLiked(like));
+    //     }
+    // }, [videoId, playlistId]);
 
     useEffect(() => {
-        handlePlayback();
+        console.log(params);
+        setState(State.Buffering);
+        let track = Track.new();
+        track.videoId = params.v;
+        track.playlistId = params.list;
+        console.log("handlePlayback", track);
+        
+        console.log("watch.web");
+        Music.handlePlayback(track, true);
 
         const castListener = Cast.addListener(
             Cast.EVENT_CAST,

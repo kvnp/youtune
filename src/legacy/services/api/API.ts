@@ -63,28 +63,13 @@ export default class API {
      */
     static YTMusic: YTMusic = new YTMusic();
 
+    /**
+     * API initialization status:
+     * 0: not initialized, 
+     * 1: initializing,
+     * 2: initialized
+     */
     static init = 0;
-    /**
-     * API initialization status:
-     * 0: not initialized, 
-     * 1: initializing,
-     * 2: initialized
-     */
-    static set initialized(value: number) {
-        if (value == 2)
-            this.#emitter.emit(API.EVENT_API_INITIALIZED);
-
-        this.init = value;
-    }
-    /**
-     * API initialization status:
-     * 0: not initialized, 
-     * 1: initializing,
-     * 2: initialized
-     */
-    static get initialized() {
-        return this.init;
-    }
 
     /**
      * Initialize the API. If it's already initialized, it will return immediately.
@@ -98,33 +83,35 @@ export default class API {
      * });
      * 
      */
-    static initialize() {
+    static initialize(): Promise<API> {
+        console.log("Current initialization state: " + this.init);
         return new Promise((resolve, reject) => {
-            if (this.initialized == 0)
-                this.initialized = 1;
-            else if (this.initialized == 1)
-                return new Promise((resolve, reject) => {
-                    API.addListener(API.EVENT_API_INITIALIZED, () => {
-                        resolve(true);
+            if (this.init == 1)
+                API.addListener(
+                    API.EVENT_API_INITIALIZED,
+                    () => resolve(this)
+                );
+            else if (this.init == 2)
+                resolve(this);
+            else {
+                this.init = 1;
+                const baseURL = Platform.OS == "web"
+                    ? window.location.origin + "/proxy"
+                    : "https://music.youtube.com";
+
+                API.YTMusic.initialize({ baseURL, headers: {} })
+                    .then(_ytm => {
+                        UI.setHeader({ url: API.YTMusic.initialData[1].data.background.musicThumbnailRenderer.thumbnail.thumbnails[0].url });
+                        API.init = 2;
+                        this.#emitter.emit(API.EVENT_API_INITIALIZED, undefined);
+                        resolve(this);
                     })
-                });
-            else
-                return resolve(true);
-
-            const baseURL = Platform.OS == "web"
-                ? window.location.origin + "/proxy"
-                : "https://music.youtube.com";
-
-            API.YTMusic.initialize({ baseURL, headers: {} })
-                .then(_ytm => {
-                    UI.setHeader({ url: API.YTMusic.initialData[1].data.background.musicThumbnailRenderer.thumbnail.thumbnails[0].url });
-                    API.initialized = 2;
-                    resolve(true);
-                })
-                .catch(reject => {
-                    console.error("API initialization failed: " + reject);
-                    API.initialized = 0;
-                });
+                    .catch(rej => {
+                        console.error("API initialization failed: " + reject);
+                        API.init = 0;
+                        reject(rej);
+                    });
+            }
         });
     }
 
@@ -134,21 +121,20 @@ export default class API {
      * If it's initializing, it will wait for it to finish.
      * @returns Promise<API>
      */
-    static waitForInitialization(): Promise<API> {
-        return new Promise((resolve, reject) => {
-            console.log("Waiting for initialization");
-            console.log("Initialized: " + this.initialized);
-            if (this.initialized == 0)
-                API.initialize().then(() => {
+    static waitForInitialization(test?: string): Promise<API> {
+        if (this.init == 0) {
+            return API.initialize();
+        } else {
+            return new Promise((resolve, reject) => {
+                if (this.init == 1)
+                    API.addListener(API.EVENT_API_INITIALIZED, () => {
+                        console.log("Listener stopped. API initialized");
+                        resolve(this);
+                    });
+                else if (this.init == 2)
                     resolve(this);
-                });
-            if (this.initialized == 1)
-                API.addListener(API.EVENT_API_INITIALIZED, () => {
-                    resolve(this);
-                });
-            else
-                resolve(this);
-        });
+            });
+        }
     }
 
     /**
@@ -176,6 +162,7 @@ export default class API {
      */
     static async getSong(videoId: string): Promise<Track> {
         const result: SongFull = await API.YTMusic.getSong(videoId);
+        console.log(result);
         return Track.fromSongFullResult(result);
     }
 }

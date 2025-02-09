@@ -35,6 +35,7 @@ export default class Navigation {
     }
 
     static handleMedia(media: MediaType) {
+        console.log("Handling media", media);
         const { browseId, playlistId, videoId } = media;
     
         if (videoId != undefined && playlistId != undefined) {

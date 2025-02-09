@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View, Image, Text } from "react-native";
+import { StyleSheet, View, Image, Text, StyleProp } from "react-native";
 
 import { TouchableRipple} from "react-native-paper";
-import { useNavigation, useTheme } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { State } from 'react-native-track-player';
 import Music from "../../services/music/Music";
@@ -11,9 +11,8 @@ import Cast from "../../services/music/Cast";
 import ScrollingText from "../shared/ScrollingText";
 import { showStreamModal } from "../modals/StreamModal";
 
-export default function MiniPlayer({style, containerStyle}) {
+export default function MiniPlayer({style}: {style?: StyleProp<View>}) {
     const navigation = useNavigation();
-    const { colors } = useTheme();
 
     const [state, setState] = useState(Music.state);
     const [track, setTrack] = useState(Music.metadata);
@@ -61,6 +60,7 @@ export default function MiniPlayer({style, containerStyle}) {
     };
 
     const onOpen = () => {
+        //@ts-ignore
         navigation.navigate("Music", {
             v: track.videoId,
             list: track.playlistId
@@ -69,21 +69,20 @@ export default function MiniPlayer({style, containerStyle}) {
     
     const { title, artist, artwork } = track;
 
-    return <View style={[styles.main, {backgroundColor: colors.card}, containerStyle]}>
+    return <View style={[styles.main, style]}>
         <View style={[styles.main, {
             justifyContent: "space-evenly",
             width: "100%",
             alignSelf: "center"
         }, style]}>
             <View style={styles.playback}>
-                <View style={{width: positionWidth, backgroundColor: colors.text}}></View>
-                <View style={{width: remainingWidth, backgroundColor: colors.card}}></View>
+                <View style={{width: positionWidth}}></View>
+                <View style={{width: remainingWidth}}></View>
             </View>
             <View style={styles.container}>
                 <Image source={{uri: artwork}} style={styles.image}/>
                 <TouchableRipple
                     borderless={true}
-                    rippleColor={colors.primary}
                     onPress={onOpen}
                     style={[
                         styles.textContainer,
@@ -96,7 +95,6 @@ export default function MiniPlayer({style, containerStyle}) {
                             numberOfLines={1}
                             style={[
                                 styles.titleText,
-                                {color: colors.text}
                             ]}
                         >
                             {title}
@@ -108,7 +106,6 @@ export default function MiniPlayer({style, containerStyle}) {
                             numberOfLines={1}
                             style={[
                                 styles.subtitleText,
-                                {color: colors.text,}
                             ]}
                         >
                             {artist}
@@ -119,10 +116,8 @@ export default function MiniPlayer({style, containerStyle}) {
 
                 <TouchableRipple
                     borderless={true}
-                    rippleColor={colors.primary}
                     style={[
                         styles.button,
-                        {color: colors.card, borderRadius: 25}
                     ]}
                     onPress={onStop}
                     onLongPress={Music.isStreaming ? showStreamModal : undefined}
@@ -133,17 +128,14 @@ export default function MiniPlayer({style, containerStyle}) {
                                 ? "cast-connected"
                                 : "clear"
                         }
-                        color={colors.text}
                         size={29}
                     />
                 </TouchableRipple>
 
                 <TouchableRipple
                     borderless={true}
-                    rippleColor={colors.primary}
                     style={[
                         styles.button,
-                        {color: colors.card, borderRadius: 25}
                     ]}
                     onPress={onPlay}
                 >
@@ -153,23 +145,19 @@ export default function MiniPlayer({style, containerStyle}) {
                                 ? "pause"
                                 : "play-arrow"
                         }
-                        color={colors.text}
                         size={29}
                     />
                 </TouchableRipple>
 
                 <TouchableRipple
                     borderless={true}
-                    rippleColor={colors.primary}
                     style={[
                         styles.button,
-                        {color: colors.card, borderRadius: 25}
                     ]}
                     onPress={onNext}
                 >
                         <MaterialIcons
                             name="skip-next"
-                            color={colors.text}
                             size={29}
                         />
                 </TouchableRipple>

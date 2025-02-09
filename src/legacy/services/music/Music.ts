@@ -44,7 +44,7 @@ export default class Music {
     }
 
     static metadataList: Array<Track> = [];
-    static get list() {return this.metadataList;}
+    static get list() { return this.metadataList; }
     static set list(array) {
         this.metadataList = array;
         this.#emitter.emit(this.EVENT_QUEUE_UPDATE, this.metadataList);
@@ -94,7 +94,7 @@ export default class Music {
     static audioContext: AudioContext;
 
     static TrackPlayerTaskProvider() {
-        return async function() {
+        return async function () {
             TrackPlayer.addEventListener(Event.PlaybackState, params => {
                 if (Music.isStreaming)
                     return clearInterval(Music.#positionInterval)
@@ -104,17 +104,17 @@ export default class Music {
                     TrackPlayer.getProgress()
                         .then(progress => Music.position = progress.position);
                 } else if (params.state != Music.state) {
-                    Music.#positionInterval = window.setInterval(async() =>
+                    Music.#positionInterval = window.setInterval(async () =>
                         Music.position = (await TrackPlayer.getProgress()).position
-                    , 500);
+                        , 500);
                 }
-                
+
                 if (!Music.metadata.videoId)
                     return;
-                
+
                 Music.state = params.state;
             });
-    
+
             TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, params => {
                 if (Music.isStreaming)
                     return;
@@ -135,18 +135,18 @@ export default class Music {
                     for (let i = params.index + 1; i < params.index + 2; i++) {
                         if (i >= Music.list.length)
                             break;
-                        
+
                         if (!Music.trackUrlLoaded[i])
                             Music.enqueue(i);
                     }
                 }
             });
-    
+
             TrackPlayer.addEventListener(Event.PlaybackQueueEnded, params => {
                 //console.log(Event.PlaybackQueueEnded);
                 //console.log(params);
             });
-    
+
             TrackPlayer.addEventListener(Event.PlaybackError, params => {
                 console.log(Event.PlaybackError);
                 console.log(params);
@@ -154,41 +154,41 @@ export default class Music {
                     TrackPlayer.play();
                 });*/
             });
-    
+
             TrackPlayer.addEventListener(Event.RemoteNext, () => {
                 Music.skipNext();
             });
-    
+
             TrackPlayer.addEventListener(Event.RemotePrevious, () => {
                 Music.skipPrevious();
             });
-    
+
             TrackPlayer.addEventListener(Event.RemotePlay, () => TrackPlayer.play());
-    
+
             TrackPlayer.addEventListener(Event.RemotePause, () => TrackPlayer.pause());
-    
+
             TrackPlayer.addEventListener(Event.RemoteStop, () => TrackPlayer.reset());
-    
+
             TrackPlayer.addEventListener(Event.RemoteSeek, params => {
-                TrackPlayer.seekTo( ~~(params.position) );
+                TrackPlayer.seekTo(~~(params.position));
             });
-    
-            TrackPlayer.addEventListener(Event.RemoteJumpForward, async() => {
+
+            TrackPlayer.addEventListener(Event.RemoteJumpForward, async () => {
                 const progress = await TrackPlayer.getProgress();
                 let position = progress.position;
                 let duration = progress.duration;
                 position += 10;
                 if (position > duration) position = duration;
-    
+
                 TrackPlayer.seekTo(position);
             });
-    
-            TrackPlayer.addEventListener(Event.RemoteJumpBackward, async() => {
+
+            TrackPlayer.addEventListener(Event.RemoteJumpBackward, async () => {
                 let position = (await TrackPlayer.getProgress()).position;
                 position -= 10;
                 if (position < 0)
                     position = 0;
-    
+
                 TrackPlayer.seekTo(position);
             });
         }
@@ -215,12 +215,12 @@ export default class Music {
 
     static enqueue(index: number) {
         Music.#queue.enqueue(() => {
-            return new Promise(async(resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 let track = Music.list[index];
                 track = {
                     ...track,
                     ...(await API.getSong(track.videoId))
-                }
+                };
                 resolve(track);
             });
         });
@@ -233,7 +233,7 @@ export default class Music {
             TrackPlayer.pause();
     }
 
-    static reset(dontResetTransition: boolean) {
+    static reset(dontResetTransition?: boolean) {
         return new Promise((resolve, reject) => {
             if (!Music.isStreaming)
                 TrackPlayer.reset();
@@ -260,23 +260,23 @@ export default class Music {
         else {
             TrackPlayer.seekTo(position);
             clearInterval(Music.#positionInterval);
-            Music.#positionInterval = window.setInterval(async() =>
+            Music.#positionInterval = window.setInterval(async () =>
                 Music.position = await TrackPlayer.getPosition()
-            , 500);
+                , 500);
         }
     }
 
     static initialize() {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             TrackPlayer.registerPlaybackService(Music.TrackPlayerTaskProvider);
             await TrackPlayer.setupPlayer({
-                
+
             });
             await TrackPlayer.updateOptions(TrackPlayerOptions);
             TrackPlayer.setRepeatMode(Music.repeatMode);
 
             Music.#queue.on("reject", error => console.log(error));
-            Music.#queue.on("resolve", async(track) => {
+            Music.#queue.on("resolve", async (track) => {
                 if (!Music.list?.length || Music.state == State.None)
                     return;
 
@@ -335,7 +335,7 @@ export default class Music {
 
     static async add(track: Track, trackIndex: number) {
         return new Promise((resolve, reject) => {
-            TrackPlayer.add(track, trackIndex).then(() => {
+            TrackPlayer.add(Track.asAddTrack(track), trackIndex).then(() => {
                 track.videoId = track.videoId + "&" + queueAddCounter++;
                 Music.list = [
                     ...Music.list.slice(0, trackIndex),
@@ -379,7 +379,7 @@ export default class Music {
             Music.repeatMode = RepeatMode.Track;
         else // if (Music.repeatMode == RepeatMode.Track)
             Music.repeatMode = RepeatMode.Off;
-        
+
         TrackPlayer.setRepeatMode(Music.repeatMode);
         return Music.repeatModeString;
     }
@@ -402,14 +402,14 @@ export default class Music {
             } else
                 index = Music.list.length - 1;
         }
-        
+
         forward = forward != undefined
             ? forward
             : index > Music.index;
 
         if (!forward && Music.position >= 10)
             return Music.seekTo(0)
-        
+
         if (Music.trackUrlLoaded[Music.index])
             Music.skip(index);
         else {
@@ -426,13 +426,13 @@ export default class Music {
             Cast.cast();
         } else TrackPlayer.skip(index);
     }
-    
-    static skipNext() {Music.skipTo(Music.index + 1)}
-    static skipPrevious() {Music.skipTo(Music.index - 1)}
 
-    static async handlePlayback(track: Track, forced: boolean) {
+    static skipNext() { Music.skipTo(Music.index + 1) }
+    static skipPrevious() { Music.skipTo(Music.index - 1) }
+
+    static handlePlayback(track: Track, forced: boolean) {
         Music.transition = track;
-        const {videoId, playlistId } = track;
+        const { videoId, playlistId } = track;
         let queue = Music.list;
 
         if (forced)
@@ -444,37 +444,26 @@ export default class Music {
                 if (playlistId == track.playlistId) {
                     if (track.videoId == videoId)
                         return;
-                    
-                    for (let i = 0; i < queue.length; i++) {
+
+                    for (let i = 0; i < queue.length; i++)
                         if (queue[i].videoId == videoId)
                             return Music.skip(i);
-                    }
                 }
-                
+
                 Music.reset(true);
             }
-
-        let local = false;
-        if (typeof playlistId == "string")
-            if (playlistId.startsWith("LOCAL"))
-                local = true;
-
-        if (local) Downloads.getPlaylist(playlistId, videoId)
-            .then(localPlaylist => {
-                if (localPlaylist != null)
-                    Music.startPlaylist(localPlaylist, 0);
-                
-            })
-            .catch(console.error);
-        else API.waitForInitialization().then(() => {
+        
+        API.waitForInitialization().then(() => {
+            console.log("Getting next songs", videoId, playlistId);
             API.getNextSongs(videoId, playlistId!)
-            .then(tracks => {
-                let resultPlaylist = new Playlist();
-                resultPlaylist.list = tracks;
-                resultPlaylist.index = 0;
-                Music.startPlaylist(resultPlaylist, 0);
-            })
-            .catch(console.error);
+                .then(tracks => {
+                    console.log(tracks);
+                    let resultPlaylist = new Playlist();
+                    resultPlaylist.list = tracks;
+                    resultPlaylist.index = 0;
+                    Music.startPlaylist(resultPlaylist, 0);
+                })
+                .catch(console.error);
         });
     }
 
@@ -499,7 +488,7 @@ export default class Music {
         //                 ...(await API.getSong(Music.list[i].videoId))
         //             };
         //         }
-                
+
         //         Music.trackUrlLoaded[i] = true;
         //     }
 
@@ -512,7 +501,7 @@ export default class Music {
                 console.error("No tracks to play");
             }
 
-            await TrackPlayer.add(Music.list);
+            await TrackPlayer.add(Track.asAddTracks(Music.list));
             await TrackPlayer.skip(Music.index);
             if (position)
                 await TrackPlayer.seekTo(position);

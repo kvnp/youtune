@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, StyleProp, ViewStyle } from "react-native";
 
-import { TouchableRipple} from "react-native-paper";
-import { useNavigation, useTheme } from "@react-navigation/native";
+import { TouchableRipple } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { State } from 'react-native-track-player';
 import Music from "../../services/music/Music";
@@ -12,22 +12,21 @@ import ScrollingText from "../shared/ScrollingText";
 import { showStreamModal } from "../modals/StreamModal";
 
 var firstY;
-export default function MiniPlayer({style, containerStyle}) {
+export default function MiniPlayer({ style }: { style: StyleProp<View> }) {
     const navigation = useNavigation();
-    const { colors } = useTheme();
 
     const [state, setState] = useState(Music.state);
     const [track, setTrack] = useState(Music.metadata);
     const [position, setPosition] = useState(Music.position);
     const currentHeight = useRef(0);
-    const container = useRef(null);
+    const container = useRef<HTMLDivElement>(null);
 
     const positionLength = (100 / track.duration * position);
     const positionWidth = positionLength + "%";
     const remainingWidth = (100 - positionLength) + "%";
 
-    const handleMove = e => {
-        container.current.style.transition = "";
+    const handleMove = (e: TouchEvent | MouseEvent) => {
+        container.current!.style.transition = "";
         let y;
         if (e instanceof TouchEvent)
             y = e.touches[0].clientY;
@@ -42,45 +41,41 @@ export default function MiniPlayer({style, containerStyle}) {
         // if (newHeight >= 0 && newHeight <= 50)
         //     moveMargin(newHeightPx);
 
-        container.current.style.height = newHeightPx;
+        container.current!.style.height = newHeightPx;
     };
+
+    const enableMouse = () => {
+        container.current!.style.pointerEvents = "auto";
+        container.current!.parentElement!.style.pointerEvents = "none";
+        container.current!.addEventListener("mousemove", handleMove);
+    }
+
+    const disableMouse = () => {
+        container.current!.style.pointerEvents = "";
+        container.current!.parentElement!.style.pointerEvents = "";
+        container.current!.removeEventListener("mousemove", handleMove);
+    }
 
     const resetMove = () => {
         disableMouse();
         firstY = 0;
 
-        let thisHeight = Number(container.current.style.height.slice(0, -2));
+        let thisHeight = container.current!.clientHeight;
         if (thisHeight <= 10)
             onStop();
         else if (thisHeight >= 100)
-            navigation.navigate("Music");
+            // @ts-ignore
+            navigation.navigate("watch");
 
-        container.current.style.height = currentHeight.current + "px";
+        container.current!.style.height = currentHeight.current + "px";
         // resetMargin();
     };
 
     useEffect(() => {
-        currentHeight.current = Number.isInteger(containerStyle.height)
-            ? containerStyle.height
-            : Number(containerStyle.height.slice(0, -2));
-    }, [containerStyle]);
-
-    const enableMouse = () => {
-        container.current.style.pointerEvents = "auto";
-        container.current.parentElement.style.pointerEvents = "none";
-        container.current.addEventListener("mousemove", handleMove);
-    }
-    const disableMouse = () => {
-        container.current.style.pointerEvents = "";
-        container.current.parentElement.style.pointerEvents = "";
-        container.current.removeEventListener("mousemove", handleMove);
-    }
-
-    useEffect(() => {
-        container.current.addEventListener("mousedown", enableMouse);
-        container.current.addEventListener("mouseup", resetMove);
-        container.current.addEventListener("touchmove", handleMove);
-        container.current.addEventListener("touchend", resetMove);
+        container.current!.addEventListener("mousedown", enableMouse);
+        container.current!.addEventListener("mouseup", resetMove);
+        container.current!.addEventListener("touchmove", handleMove);
+        container.current!.addEventListener("touchend", resetMove);
 
         const stateListener = Music.addListener(
             Music.EVENT_STATE_UPDATE,
@@ -108,7 +103,7 @@ export default function MiniPlayer({style, containerStyle}) {
 
     const onNext = () => Music.skipNext();
     const onStop = () => {
-        container.current.style.transition = "height .25s";
+        container.current!.style.transition = "height .25s";
         if (Music.isStreaming)
             Cast.reset();
         else
@@ -122,71 +117,82 @@ export default function MiniPlayer({style, containerStyle}) {
     };
 
     const onOpen = () => {
-        navigation.navigate("Music", {
+        //@ts-ignore
+        navigation.navigate("watch", {
             v: track.videoId,
             list: track.playlistId
         });
     };
-    
+
     const { title, artist, artwork } = track;
 
-    return <View ref={container} style={[styles.main, {backgroundColor: colors.card}, containerStyle]}>
+    return <View
+        ref={container}
+        style={[styles.main, style]}
+    >
         <View style={[styles.main, {
             justifyContent: "space-evenly",
             width: "100%",
             alignSelf: "center"
-        }, style]}>
+        }, style] as StyleProp<ViewStyle>}>
             <View style={styles.playback}>
-                <View style={{width: positionWidth, backgroundColor: colors.text}}></View>
-                <View style={{width: remainingWidth, backgroundColor: colors.card}}></View>
+                <View style={{ width: positionWidth }}></View>
+                <View style={{ width: remainingWidth }}></View>
             </View>
             <View style={styles.container}>
                 <div style={styles.image}>
-                    <img src={artwork} loading="lazy" onLoad={e => e.target.style.opacity = 1} style={{width: "100%", height: "100%", objectFit: "contain", backgroundColor: "gray", opacity: 0, transition: "opacity .4s ease-in"}}></img>
+                    <img
+                        src={artwork}
+                        loading="lazy"
+                        onLoad={e => e.target.style.opacity = 1}
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "contain",
+                            backgroundColor: "gray",
+                            opacity: 0,
+                            transition: "opacity .4s ease-in"
+                        }} />
                 </div>
 
                 <TouchableRipple
                     borderless={true}
-                    rippleColor={colors.primary}
                     onPress={onOpen}
                     style={[
                         styles.textContainer,
-                        {alignItems: "stretch", padding: 0, margin: 0}
+                        { alignItems: "stretch", padding: 0, margin: 0 }
                     ]}
                 >
                     <>
-                    <ScrollingText>
-                        <Text
-                            numberOfLines={1}
-                            style={[
-                                styles.titleText,
-                                {color: colors.text}
-                            ]}
-                        >
-                            {title}
-                        </Text>
-                    </ScrollingText>
+                        <ScrollingText>
+                            <Text
+                                numberOfLines={1}
+                                style={[
+                                    styles.titleText,
+                                ]}
+                            >
+                                {title}
+                            </Text>
+                        </ScrollingText>
 
-                    <ScrollingText>
-                        <Text
-                            numberOfLines={1}
-                            style={[
-                                styles.subtitleText,
-                                {color: colors.text,}
-                            ]}
-                        >
-                            {artist}
-                        </Text>
-                    </ScrollingText>
+                        <ScrollingText>
+                            <Text
+                                numberOfLines={1}
+                                style={[
+                                    styles.subtitleText,
+                                ]}
+                            >
+                                {artist}
+                            </Text>
+                        </ScrollingText>
                     </>
                 </TouchableRipple>
 
                 <TouchableRipple
                     borderless={true}
-                    rippleColor={colors.primary}
                     style={[
                         styles.button,
-                        {color: colors.card, borderRadius: 25}
+                        { borderRadius: 25 }
                     ]}
                     onPress={onStop}
                     onLongPress={Music.isStreaming ? showStreamModal : undefined}
@@ -197,17 +203,15 @@ export default function MiniPlayer({style, containerStyle}) {
                                 ? "cast-connected"
                                 : "clear"
                         }
-                        color={colors.text}
                         size={29}
                     />
                 </TouchableRipple>
 
                 <TouchableRipple
                     borderless={true}
-                    rippleColor={colors.primary}
                     style={[
                         styles.button,
-                        {color: colors.card, borderRadius: 25}
+                        { borderRadius: 25 }
                     ]}
                     onPress={onPlay}
                 >
@@ -217,25 +221,22 @@ export default function MiniPlayer({style, containerStyle}) {
                                 ? "pause"
                                 : "play-arrow"
                         }
-                        color={colors.text}
                         size={29}
                     />
                 </TouchableRipple>
 
                 <TouchableRipple
                     borderless={true}
-                    rippleColor={colors.primary}
                     style={[
                         styles.button,
-                        {color: colors.card, borderRadius: 25}
+                        { borderRadius: 25 }
                     ]}
                     onPress={onNext}
                 >
-                        <MaterialIcons
-                            name="skip-next"
-                            color={colors.text}
-                            size={29}
-                        />
+                    <MaterialIcons
+                        name="skip-next"
+                        size={29}
+                    />
                 </TouchableRipple>
             </View>
         </View>
@@ -282,7 +283,7 @@ const styles = StyleSheet.create({
     },
 
     subtitleText: {
-        
+
     },
 
     button: {

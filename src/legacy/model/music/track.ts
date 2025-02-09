@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { AddTrack, RatingType } from "react-native-track-player";
 import { NextResult, SongDetailed, SongFull } from "ytmusic-api";
 
 type TrackData = {
@@ -23,7 +24,7 @@ export default class Track {
     id: string;
     url: string | null;
     mimeType: string | null;
-    duration: number | null;
+    duration: number;
     title: string;
     artist: string;
     album: string | null;
@@ -40,7 +41,7 @@ export default class Track {
         this.id = data.id;
         this.url = data.url;
         this.mimeType = data.mimeType;
-        this.duration = data.duration;
+        this.duration = data.duration ? data.duration : 0;
         this.title = data.title;
         this.artist = data.artist;
         this.album = data.album;
@@ -52,6 +53,29 @@ export default class Track {
         this.albumId = data.albumId;
         this.playlistId = data.playlistId;
         this.artistId = data.artistId;
+    }
+
+    static asAddTrack(t: Track) {
+        const track: AddTrack = {
+            id: t.id,
+            url: t.url ? t.url : "",
+            title: t.title,
+            artist: t.artist,
+            album: t.album ? t.album : "",
+            date: t.date ? t.date : "",
+            rating: t.rating == null
+                ? undefined
+                : t.rating
+                    ? RatingType.ThumbsUpDown
+                    : RatingType.ThumbsUpDown,
+            artwork: t.artwork
+        };
+
+        return track;
+    }
+
+    static asAddTracks(i: Track[]) {
+        return i.map(t => Track.asAddTrack(t));
     }
 
     static new() {

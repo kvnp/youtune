@@ -12,10 +12,10 @@ import { State } from 'react-native-track-player'
 
 const getHeight = (state: State) => [State.Stopped, State.None].includes(state)
     ? 0
-    : 50;
+    : 32;
 
 const TabLayout = () => {
-    const [marginBottom, setMarginBottom] = useState(getHeight(Music.state));
+    const [miniPlayerHeight, setMiniPlayerHeight] = useState(getHeight(Music.state));
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
@@ -24,7 +24,7 @@ const TabLayout = () => {
 
         const stateListener = Music.addListener(
             Music.EVENT_STATE_UPDATE,
-            state => setMarginBottom(getHeight(state))
+            state => setMiniPlayerHeight(getHeight(state))
         );
 
         return () => stateListener.remove();
@@ -35,10 +35,9 @@ const TabLayout = () => {
             tabBar={(props) => <>
                 <MiniPlayer
                     containerStyle={{
-                        position: "absolute",
                         bottom: 48,
                         width: "100%",
-                        height: marginBottom
+                        marginBottom: miniPlayerHeight,
                     }}
                     style={{maxWidth: 800}}
                 />
