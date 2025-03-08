@@ -455,7 +455,7 @@ export default class Music {
         
         API.waitForInitialization().then(() => {
             console.log("Getting next songs", videoId, playlistId);
-            API.getNextSongs(videoId, playlistId!)
+            API.getNextSongs(videoId, playlistId)
                 .then(tracks => {
                     console.log(tracks);
                     let resultPlaylist = new Playlist();

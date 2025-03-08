@@ -4,38 +4,38 @@ import { NextResult, SongDetailed, SongFull } from "ytmusic-api";
 
 type TrackData = {
     id: string;
-    url: string | null;
-    mimeType: string | null;
-    duration: number | null;
+    url: string | undefined;
+    mimeType: string | undefined;
+    duration: number | undefined;
     title: string;
     artist: string;
-    album: string | null;
-    date: string | null;
-    rating: boolean | null;
+    album: string | undefined;
+    date: string | undefined;
+    rating: boolean | undefined;
     artwork: string;
 
     videoId: string;
-    albumId: string | null;
-    playlistId: string | null;
-    artistId: string | null;
+    albumId: string | undefined;
+    playlistId: string | undefined;
+    artistId: string | undefined;
 }
 
 export default class Track {
     id: string;
-    url: string | null;
-    mimeType: string | null;
+    url: string | undefined;
+    mimeType: string | undefined;
     duration: number;
     title: string;
     artist: string;
-    album: string | null;
-    date: string | null;
-    rating: boolean | null;
+    album: string | undefined;
+    date: string | undefined;
+    rating: boolean | undefined;
     artwork: string;
 
     videoId: string;
-    albumId: string | null;
-    playlistId: string | null;
-    artistId: string | null;
+    albumId: string | undefined;
+    playlistId: string | undefined;
+    artistId: string | undefined;
 
     constructor(data: TrackData) {
         this.id = data.id;
@@ -81,60 +81,60 @@ export default class Track {
     static new() {
         return new Track({
             id: "",
-            url: null,
-            mimeType: null,
-            duration: null,
+            url: undefined,
+            mimeType: undefined,
+            duration: undefined,
             title: "",
             artist: "",
-            album: null,
-            date: null,
-            rating: null,
+            album: undefined,
+            date: undefined,
+            rating: undefined,
             artwork: "",
 
             videoId: "",
-            albumId: null,
-            playlistId: null,
-            artistId: null
+            albumId: undefined,
+            playlistId: undefined,
+            artistId: undefined
         });
     }
 
     static fromNextResult(nextResult: NextResult) {
         return new Track({
             id: nextResult.videoId,
-            url: null,
-            mimeType: null,
-            duration: null,
+            url: undefined,
+            mimeType: undefined,
+            duration: undefined,
             title: nextResult.name,
             artist: nextResult.artist.name,
-            album: null,
-            date: null,
-            rating: null,
+            album: undefined,
+            date: undefined,
+            rating: undefined,
             artwork: nextResult.thumbnails[nextResult.thumbnails.length - 1].url,
 
             videoId: nextResult.videoId,
-            albumId: null,
+            albumId: undefined,
             playlistId: nextResult.playlistId,
-            artistId: nextResult.artist.artistId
+            artistId: nextResult.artist.artistId ? nextResult.artist.artistId : undefined
         });
     }
 
     static fromSongDetailed(songResult: SongDetailed) {
         return new Track({
             id: songResult.videoId,
-            url: null,
-            mimeType: null,
-            duration: songResult.duration,
+            url: undefined,
+            mimeType: undefined,
+            duration: songResult.duration ? songResult.duration : undefined,
             title: songResult.name,
             artist: songResult.artist.name,
-            album: songResult.album ? songResult.album.name : null,
-            date: null,
-            rating: null,
+            album: songResult.album ? songResult.album.name : undefined,
+            date: undefined,
+            rating: undefined,
             artwork: songResult.thumbnails[songResult.thumbnails.length - 1].url,
 
             videoId: songResult.videoId,
-            albumId: songResult.album ? songResult.album.albumId : null,
-            playlistId: null,
-            artistId: songResult.artist.artistId
+            albumId: songResult.album ? songResult.album.albumId : undefined,
+            playlistId: undefined,
+            artistId: songResult.artist.artistId ? songResult.artist.artistId : undefined
         });
     }
 
@@ -158,15 +158,15 @@ export default class Track {
             duration: songResult.duration,
             title: songResult.name,
             artist: songResult.artist.name,
-            album: null,
-            date: null,
-            rating: null,
+            album: undefined,
+            date: undefined,
+            rating: undefined,
             artwork: songResult.thumbnails[songResult.thumbnails.length - 1].url,
 
             videoId: songResult.videoId,
-            albumId: null,
-            playlistId: null,
-            artistId: songResult.artist.artistId
+            albumId: undefined,
+            playlistId: undefined,
+            artistId: songResult.artist.artistId ? songResult.artist.artistId : undefined
         });
     }
 
@@ -205,7 +205,7 @@ type SongResult = {
     name: string;
     videoId: string;
     artist: {
-        artistId: string | null;
+        artistId: string | undefined;
         name: string;
     };
     duration: number;

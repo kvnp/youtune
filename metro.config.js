@@ -42,7 +42,7 @@ config.server = {
                 headers: {
                     "Referer": "https://www.youtube.com",
                     "Origin": "https://www.youtube.com",
-                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/116.0",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0",
                     "Connection": "Keep-Alive"
                 }
             }))
@@ -52,7 +52,7 @@ config.server = {
                 headers: {
                     "Referer": "https://www.youtube.com",
                     "Origin": "https://www.youtube.com",
-                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0"
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0"
                 }
             }))
             .use('/proxy/vi', createProxyMiddleware({
@@ -63,7 +63,7 @@ config.server = {
                 headers: {
                     "Referer": "https://www.youtube.com",
                     "Origin": "https://www.youtube.com",
-                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0"
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0"
                 },
             }))
             .use('/proxy', createProxyMiddleware({
@@ -74,13 +74,16 @@ config.server = {
                 headers: {
                     "Origin": "https://music.youtube.com",
                     "Referer": "https://music.youtube.com",
-                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0",
                 },
 
                 on: {
                     proxyReq: (proxyReq, req, res) => {
-                        // if (req.headers.cookie)
-                        //   req.headers.cookie = req.headers.cookie.replace(/(Domain=.*?;)/, "Domain=.youtube.com");
+                        // proxyReq.removeHeader('Origin');
+                        // proxyReq.removeHeader('Referer');
+                        
+                        if (req.headers.cookie)
+                          req.headers.cookie = req.headers.cookie.replace(/(Domain=.*?;)/, "Domain=.youtube.com");
                     },
 
                     proxyRes: (proxyRes, req, res) => {

@@ -121,14 +121,13 @@ export default class API {
      * If it's initializing, it will wait for it to finish.
      * @returns Promise<API>
      */
-    static waitForInitialization(test?: string): Promise<API> {
+    static waitForInitialization(): Promise<API> {
         if (this.init == 0) {
             return API.initialize();
         } else {
             return new Promise((resolve, reject) => {
                 if (this.init == 1)
                     API.addListener(API.EVENT_API_INITIALIZED, () => {
-                        console.log("Listener stopped. API initialized");
                         resolve(this);
                     });
                 else if (this.init == 2)
@@ -146,12 +145,8 @@ export default class API {
      * @returns Promise<Track[]>
      */
     static async getNextSongs(videoId: string, listId?: string): Promise<Track[]> {
-        let tracks: Track[] = [];
         const results = await API.YTMusic.getNext(videoId, listId!);
-        for (const result of results)
-            tracks.push(Track.fromNextResult(result));
-
-        return tracks;
+        return results.map(next => Track.fromNextResult(next));
     }
 
     /**
@@ -161,8 +156,8 @@ export default class API {
      * @returns Promise<Track>
      */
     static async getSong(videoId: string): Promise<Track> {
+        console.log("Getting", videoId);
         const result: SongFull = await API.YTMusic.getSong(videoId);
-        console.log(result);
         return Track.fromSongFullResult(result);
     }
 }
